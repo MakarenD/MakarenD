@@ -16,6 +16,6 @@
   <img src="https://komarev.com/ghpvc/?username=your-github-MakarenD&style=flat-square&color=blue" alt=""/>
 </div>
 <div align="center">
-  <img src="https://i.giphy.com/media/mJhRSYXxzq6CA0ldkh/giphy.webp" width="600" height="300"/>
+  <img src="https://media0.giphy.com/media/UCMYBeXtS8Hjuz6djP/giphy.gif?cid=ecf05e47w75yttwsvj6iufhiq5hlnjeuytcca8r2zr3pa5w9&ep=v1_gifs_related&rid=giphy.gif&ct=g" width="600" height="300"/>
 </div>
 
