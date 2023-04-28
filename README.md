@@ -196,7 +196,7 @@
 <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExY2FlZTY2MzA4MGMyMGZmMWNmMmVjODYwYTBiNWU5OGFkYjVjMmIyNiZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/yD5BvAZIfn5ShOj49U/giphy.gif" width="100"/>
 
 ## Elemental:
-+ Наносит урон придерживаясь идеальной ротации(4т4)
++ Наносит урон придерживаясь идеальной ротации
 + Авто обновления тотема гнева и тотема воздуха(при включении функции в меню)
 + Рассовая эб
 + Стоп касты под различные ситуации на боссах
