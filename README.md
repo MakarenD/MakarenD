@@ -22,6 +22,8 @@
 <h1>:man_technologist: About Rotation Profiles :</h1>
 <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExOWU2ZWQ4NTI5OTg2Y2I4NTdlZWUwNzkzMWFmZTNkODJkNjZjNDczOSZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/FzeM05O23jvnZlhfSj/giphy.gif" width="100"/>
 <h2>Unholy:</h2>
++ Хлеб
++ Молочные продукты
 + Придерживается идеальной ротации
 + Авто баф
 + Авто смена стоек в зависимости от ситуации(вне комбата включает анхоли стойку, чтобы максимально профитно бурстануть, после бурста включает блад)
@@ -76,7 +78,6 @@
 <h2 >Druid_Tank:</h2>
 <p>На данный момент профиль отсутствует</p>
 
-+ Хлеб
-+ Молочные продукты
+
 
 
