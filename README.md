@@ -21,6 +21,7 @@
 </div>
 <h1>:man_technologist: About Rotation Profiles :</h1>
 <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExOWU2ZWQ4NTI5OTg2Y2I4NTdlZWUwNzkzMWFmZTNkODJkNjZjNDczOSZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/FzeM05O23jvnZlhfSj/giphy.gif" width="100"/>
+
 ## Unholy:
 + Придерживается идеальной ротации
 + Авто баф
@@ -33,12 +34,16 @@
 + Гаргу и усиление рунического оружия использует исключительно в босса, либо в любой таргет при включении CD
 + Поддерживает бафф отчаяния и баф от т4
 + Профиль поддерживает 4т4 2т4 и ротацию без кусков
+
 ## Blood:
 + На данный момент профиль отсутствует
+
 ## Frost:
 + На данный момент профиль отсутствует
+
 ## DK_Tank:
 + На данный момент профиль отсутствует
+
 <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGEwMThjMmRmZmQ4YTMyMzA3OWZlNjFjMDFjMTk1NDdjMWY4ZDhjZiZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/XI36GFdNcsXKU9lVtt/giphy.gif" width="100"/>
 <h2 >Balance:</h2>
 <p>Придерживается идеальной ротации</p>
