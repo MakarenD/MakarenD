@@ -12,5 +12,6 @@
   <a href="your-twitter-URL">
     <img src="https://img.shields.io/badge/Discord-purple?style=for-the-badge&logo=Discord&logoColor=white" alt="Discord Badge"/>
   </a>
+  <img src="https://komarev.com/ghpvc/?username=your-github-MakarenD&style=flat-square&color=blue" alt=""/>
 </div>
-<img src="https://komarev.com/ghpvc/?username=your-github-username&style=flat-square&color=blue" alt=""/>
+
