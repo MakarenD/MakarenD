@@ -41,7 +41,7 @@
 <p>На данный момент профиль отсутствует</p>
 <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGEwMThjMmRmZmQ4YTMyMzA3OWZlNjFjMDFjMTk1NDdjMWY4ZDhjZiZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/XI36GFdNcsXKU9lVtt/giphy.gif" width="100"/>
 <h2 >Balance:</h2>
-# Придерживается идеальной ротации
+<p>Придерживается идеальной ротации</p>
 <p>Дает звездопад только в босса, либо в любой таргет при включении CD</p>
 <p>Автотаргет</p>
 <p>Авто волшебный огонь</p>
