@@ -18,6 +18,7 @@
 </div>
 <h1>:man_technologist: About Rotation Profiles :</h1>
 
+
 + Все доступные профиля написаны под руководством лучших игроков сируса на данном спеке :white_check_mark:
 + Такого хпса/дпса вы не увидите ни у одного конкурнета :white_check_mark:
 #
