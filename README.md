@@ -223,7 +223,7 @@
 + Авто диспел
 + Авто тотем прилива маны в наилучшее время
 + При включении АОЕ режима будет прекастить чайник в танка, в свободное время
-
+#
 <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZDg3ZjE5ZWFmNzMwYzM2ZTc2MTNlNmI4M2IwNDAyNzc4MGQxZmUyZCZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/C891nups222Tf0dTYD/giphy.gif" width="100"/>
 
 ## Affliction:
