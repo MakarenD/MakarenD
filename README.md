@@ -3,13 +3,10 @@
 </div>
 <br>
 <div id="badges" align="center">
-  <a href="your-youtube-URL">
-     <img src="https://img.shields.io/badge/YouTube-red?style=for-the-badge&logo=Youtube&logoColor=white" alt="Youtube Badge"/>
-  </a>
-  <a href="your-linkedin-URL">
+  <a href="https://funpay.com/users/7303789/">
      <img src="https://img.shields.io/badge/FunPay-blue?style=for-the-badge&logo=FunPayn&logoColor=white" alt="Funpay Badge"/>
   </a>
-  <a href="your-twitter-URL">
+  <a href="https://discord.gg/kbNJrUckkM">
     <img src="https://img.shields.io/badge/Discord-purple?style=for-the-badge&logo=Discord&logoColor=white" alt="Discord Badge"/>
   </a>
   <br>
