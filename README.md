@@ -18,8 +18,8 @@
 </div>
 <h1>:man_technologist: About Rotation Profiles :</h1>
 
-+ Все доступные профиля написаны под руководством лучших игроков сируса на данном спеке
-+ Такого хпса/дпса вы не увидите ни у одного конкурнета :exclamation:
++ Все доступные профиля написаны под руководством лучших игроков сируса на данном спеке :white_check_mark:
++ Такого хпса/дпса вы не увидите ни у одного конкурнета :white_check_mark:
 #
 <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExOWU2ZWQ4NTI5OTg2Y2I4NTdlZWUwNzkzMWFmZTNkODJkNjZjNDczOSZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/FzeM05O23jvnZlhfSj/giphy.gif" width="100"/>
 
