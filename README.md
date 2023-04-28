@@ -47,6 +47,7 @@
 ## DK_Tank:
 + На данный момент профиль отсутствует
 
+#
 <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGEwMThjMmRmZmQ4YTMyMzA3OWZlNjFjMDFjMTk1NDdjMWY4ZDhjZiZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/XI36GFdNcsXKU9lVtt/giphy.gif" width="100"/>
 
 ## Balance:
@@ -116,6 +117,7 @@
 ## Druid_Tank:
 + На данный момент профиль отсутствует
 
+#
 <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExNjZjYTIyN2ZkZjlhOGU0Y2VjZWFiY2IwNDUwZTUyOTg4ZWQ4MDRlMCZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/lG4k2cQLpYAYnQMdSS/giphy.gif" width="100"/>
 
 ## BeastMaster:
@@ -127,6 +129,7 @@
 ## Survival:
 + На данный момент профиль отсутствует
 
+#
 <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExZDlmYmVkMDE5ODEwZWUyMWZkYTUzNzFjZjc5ZTE3YTUxZjdmZDdkYSZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/WRu0bCHmQeWbLG8j0n/giphy.gif" width="100"/>
 
 ## Arcane:
@@ -138,6 +141,7 @@
 ## Frost:
 + На данный момент профиль отсутствует
 
+#
 <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGNhYzFmODA4YTZjNTgyZjZjYjVmMzkwYWRlYTAyYWY4MGE2OWYyMyZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/ik4ScADaODOvG8yt69/giphy.gif" width="100"/>
 
 ## Holy:
@@ -149,6 +153,7 @@
 ## Retri:
 + На данный момент профиль отсутствует
 
+#
 <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExYTYxNDYxYjI3ZTkzNGY1NjYyYmQ1M2I4NjQ2ODhhMDA0MTU1NjI4YSZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/MUJn0p51DSjwJB5ejD/giphy.gif" width="100"/>
 
 ## Discipline:
@@ -182,6 +187,7 @@
 + Авто уход в тень
 + Профиль поддерживает 4т4 2т4 и ротацию без кусков 
 
+#
 <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExMzhmMjVmMGFlNWI1MDYxNDllMWVkNmQ1ZTA3ZjllYzdlODEwOWFiNSZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/VS55OZyUxIo7GIE5q4/giphy.gif" width="100"/>
 
 ## Assassination:
@@ -193,6 +199,7 @@
 ## Subtlety:
 + На данный момент профиль отсутствует
 
+#
 <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExY2FlZTY2MzA4MGMyMGZmMWNmMmVjODYwYTBiNWU5OGFkYjVjMmIyNiZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/yD5BvAZIfn5ShOj49U/giphy.gif" width="100"/>
 
 ## Elemental:
@@ -223,6 +230,7 @@
 + Авто диспел
 + Авто тотем прилива маны в наилучшее время
 + При включении АОЕ режима будет прекастить чайник в танка, в свободное время
+
 #
 <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExZDg3ZjE5ZWFmNzMwYzM2ZTc2MTNlNmI4M2IwNDAyNzc4MGQxZmUyZCZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/C891nups222Tf0dTYD/giphy.gif" width="100"/>
 
@@ -235,6 +243,7 @@
 ## Destruction:
 + На данный момент профиль отсутствует
 
+#
 <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExMWIyYTkwMWZhYjY1MzQ3ODUxNDdlMTkzNWI5OTVmYjRlMjg5MWUzZSZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/wd7vFKUiwVeWOu7POm/giphy.gif" width="100"/>
 
 ## Arms:
