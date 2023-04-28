@@ -15,6 +15,7 @@
   <br>
   <img src="https://komarev.com/ghpvc/?username=your-github-MakarenD&style=flat-square&color=blue" alt=""/>
 </div>
+<br>
 <div align="center">
   <img src="https://media3.giphy.com/media/QW5YCWLmsvmhcI3j8U/giphy.gif?cid=ecf05e4746rio2mf98os9owxdj2b8iegewg8gpzqh7dw1si6&ep=v1_gifs_related&rid=giphy.gif&ct=g" />
 </div>
