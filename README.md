@@ -1,6 +1,3 @@
-<style>
-.tab { margin-left: 40px; }
-</style>
 <div id="header" align="center">
   <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExODNmMGYzOGM3MWQ4Zjg4OGExYzcwZTNkNzBjZjY2NmJiNzdlNmY5MCZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/mEKnXOF1PgPi835zS3/giphy.gif" width="100"/>
 </div>
@@ -23,6 +20,6 @@
   <img src="https://media3.giphy.com/media/QW5YCWLmsvmhcI3j8U/giphy.gif?cid=ecf05e4746rio2mf98os9owxdj2b8iegewg8gpzqh7dw1si6&ep=v1_gifs_related&rid=giphy.gif&ct=g" />
 </div>
 <h1>:man_technologist: About Rotation Profiles :</h1>
-<img class="tab" src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExOWU2ZWQ4NTI5OTg2Y2I4NTdlZWUwNzkzMWFmZTNkODJkNjZjNDczOSZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/FzeM05O23jvnZlhfSj/giphy.gif" width="100"/>
-<h2 class="tab">Unholy:</h2>
+<img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExOWU2ZWQ4NTI5OTg2Y2I4NTdlZWUwNzkzMWFmZTNkODJkNjZjNDczOSZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/FzeM05O23jvnZlhfSj/giphy.gif" width="100"/>
+<h2 >Unholy:</h2>
 
