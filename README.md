@@ -17,6 +17,7 @@
   <img src="https://media3.giphy.com/media/QW5YCWLmsvmhcI3j8U/giphy.gif?cid=ecf05e4746rio2mf98os9owxdj2b8iegewg8gpzqh7dw1si6&ep=v1_gifs_related&rid=giphy.gif&ct=g" />
 </div>
 <h1>:man_technologist: About Rotation Profiles :</h1>
++ Все доступные профиля написаны под руководством лучших игроков сируса на данном спеке, за счет чего выдается максимальный дпс и хпс. Такого вы нигде не увидите :exclamation:
 <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExOWU2ZWQ4NTI5OTg2Y2I4NTdlZWUwNzkzMWFmZTNkODJkNjZjNDczOSZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/FzeM05O23jvnZlhfSj/giphy.gif" width="100"/>
 
 ## Unholy:
