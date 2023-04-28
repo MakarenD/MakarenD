@@ -114,7 +114,7 @@
 + На данный момент профиль отсутствует
 
 ## Druid_Tank:
-+ На данный момент профиль отсутствуе
++ На данный момент профиль отсутствует
 
 <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExNjZjYTIyN2ZkZjlhOGU0Y2VjZWFiY2IwNDUwZTUyOTg4ZWQ4MDRlMCZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/lG4k2cQLpYAYnQMdSS/giphy.gif" width="100"/>
 
@@ -147,4 +147,26 @@
 + На данный момент профиль отсутствует
 
 ## Retri:
++ На данный момент профиль отсутствует
+
+<img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExYTYxNDYxYjI3ZTkzNGY1NjYyYmQ1M2I4NjQ2ODhhMDA0MTU1NjI4YSZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/MUJn0p51DSjwJB5ejD/giphy.gif" width="100"/>
+
+## Discipline:
++ На данный момент профиль отсутствует
+
+## Holy:
++ Хилит придерживайся идеальной ротации.
++ Использует Гимн надежды под Тотем прилива
++ Использует Божественный гимн и другие сейвы в критические моменты с функцией ттд(тайм ту дай)
++ Автопрохил меток
+  + Испепеление плоти(Джара)
+  + Метка смерти(Мороуз)
+  + Метка падшего воителя(Саурфанк)
+  + Жатва душ(Лич)
++ Авто уход в тень
++ Логика стаков на синдре
++ Стопает касты под кик босов 
+:bangbang: На данный момент, профиль поддерживает только 2т4 и 4т4 ротацию :bangbang:
+
+## Shadow:
 + На данный момент профиль отсутствует
