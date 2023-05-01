@@ -269,11 +269,13 @@
 + Авто гром(в соло цель, при включении)
 + Авто сейв, в критические моменты
 
+#
+
 <h1>:man_technologist: About General Profiles :</h1>
 
 #
 <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExN2I4NjAwOWRkMWExMzBhNThhMmMyODQ2MzQ4ZDQwYjZkYjI4NDM3NiZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/xTzdTgJSKXJWKTbNff/giphy.gif" width="100"/>
 
-#Общий профиль
+# Общий профиль
 + Авто поворот
   + Работает только если вы не двигаетесь(дабы не перехватывать управление)
