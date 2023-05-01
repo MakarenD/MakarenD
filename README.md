@@ -16,7 +16,7 @@
 <div align="center">
   <img src="https://media3.giphy.com/media/QW5YCWLmsvmhcI3j8U/giphy.gif?cid=ecf05e4746rio2mf98os9owxdj2b8iegewg8gpzqh7dw1si6&ep=v1_gifs_related&rid=giphy.gif&ct=g" />
 </div>
-<h1>:man_technologist: About Rotation Profiles :</h1>
+<h1>:man_technologist: About Pve Profiles :</h1>
 
 
 + Все доступные профиля написаны под руководством лучших игроков сируса на данном спеке :white_check_mark:
@@ -268,3 +268,12 @@
 + Авто крик
 + Авто гром(в соло цель, при включении)
 + Авто сейв, в критические моменты
+
+<h1>:man_technologist: About General Profiles :</h1>
+
+#
+<img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExN2I4NjAwOWRkMWExMzBhNThhMmMyODQ2MzQ4ZDQwYjZkYjI4NDM3NiZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/xTzdTgJSKXJWKTbNff/giphy.gif" width="100"/>
+
+#Общий профиль
++ Авто поворот
+  + Работает только если вы не двигаетесь(дабы не перехватывать управление)
