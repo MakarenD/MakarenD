@@ -273,7 +273,6 @@
 
 # About General Profiles
 
-#
 <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExN2I4NjAwOWRkMWExMzBhNThhMmMyODQ2MzQ4ZDQwYjZkYjI4NDM3NiZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/xTzdTgJSKXJWKTbNff/giphy.gif" width="100"/>
 
 # Общий профиль
