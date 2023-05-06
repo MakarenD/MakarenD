@@ -146,8 +146,8 @@
 <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGNhYzFmODA4YTZjNTgyZjZjYjVmMzkwYWRlYTAyYWY4MGE2OWYyMyZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/ik4ScADaODOvG8yt69/giphy.gif" width="100"/>
 
 ## Holy:
-+ ‼️Доступен бета профиль‼️
-+ Поддержка только 4т4
+‼️Доступен бета профиль‼️
+Поддержка только 4т4
 
 + Хилит придерживайся идеальной ротации
 + Умный свет небес
