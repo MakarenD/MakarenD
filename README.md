@@ -26,8 +26,8 @@
 + Все профиля поддерживают:
   + Логику стаков на синдре
   + Сирусовские рассы
-  + Сирусовские комплекты (2т4 и 4т4)
     + У панд обновляет пиво в комбате только при наличии Портвейн "Три топора"
+  + Сирусовские комплекты (2т4 и 4т4)
   + Стоп заклинаний под различные дебафы и сбитие кастов босса 
 #
 <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExOWU2ZWQ4NTI5OTg2Y2I4NTdlZWUwNzkzMWFmZTNkODJkNjZjNDczOSZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/FzeM05O23jvnZlhfSj/giphy.gif" width="100"/>
