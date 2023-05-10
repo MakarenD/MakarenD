@@ -138,7 +138,15 @@
 <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExZDlmYmVkMDE5ODEwZWUyMWZkYTUzNzFjZjc5ZTE3YTUxZjdmZDdkYSZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/WRu0bCHmQeWbLG8j0n/giphy.gif" width="100"/>
 
 ## Arcane:
-+ На данный момент профиль отсутствует
++ Придерживается идеальной ротации
++ Авто создание Сапфира маны и его использование
++ Умные бурсты с учетом эфектов Героизма/Жажды крови, ПС и др
++ Авто декурс
++ Авто чарокрад
++ Авто МК по имени
++ Авто доспех
++ Авто копии для понижения агра
++ Авто камень в критические моменты с функцией ттд
 
 ## Fire:
 + На данный момент профиль отсутствует
@@ -188,7 +196,7 @@
 + Авто дислеп
 + Авто возложение рук
 + Авто стан в мк
-+ Авто огурец
++ Авто камень в критические моменты с функцией ттд
 
 #
 <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExYTYxNDYxYjI3ZTkzNGY1NjYyYmQ1M2I4NjQ2ODhhMDA0MTU1NjI4YSZlcD12MV9pbnRlcm5hbF9naWZzX2dpZklkJmN0PWc/MUJn0p51DSjwJB5ejD/giphy.gif" width="100"/>
