@@ -1,5 +1,5 @@
 ### Hi there 👋
-![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=MakarenD&show_icons=true&theme=dark&bg_color=00000000)
+![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=MakarenD&text_color=fff&show_icons=true&theme=dark&bg_color=00000000)
 
 
 <!--
