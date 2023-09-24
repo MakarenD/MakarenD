@@ -1,5 +1,9 @@
 ### Hi, I'm Makaren
 
+
+
+
+
 - 🔭 I’m currently working on <a href="https://darhanger.github.io/rotations/">DarhangeR Rotations</a>
 - 🌱 I’m currently learning: <a href="https://www.lua.org">Lua</a>, <a href="https://www.python.org">Python</a>, <a href="https://dotnet.microsoft.com/en-us/languages/csharp">C#</a>, <a href="https://www.ecma-international.org/publications-and-standards/standards/ecma-262/">JavaScript</a>
 <!--
@@ -10,6 +14,10 @@
 - 😄 Pronouns: ...
 - ⚡ Fun fact: ...
 -->
+
+
+
+
 ![Anurag's GitHub stats](https://github-readme-stats.vercel.app/api?username=MakarenD&text_color=fff&icon_color=435cd9&show_icons=true&theme=dark&bg_color=00000000)<img align="right" src="https://media3.giphy.com/media/LaVp0AyqR5bGsC5Cbm/giphy.gif?cid=ecf05e4702j5mjw4h8mwt6p3xur6xnlpw7ymefs00ez9pcbs&ep=v1_gifs_search&rid=giphy.gif&ct=g" width="195"/> 
 
 <!--START_SECTION:waka-->
