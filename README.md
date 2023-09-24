@@ -1,9 +1,9 @@
 <div id="header" align="center">
  <h>Hi, I'm Makaren</h>
- <a href="https://discord.com/users/785141640087207966">
-    <img src="https://img.shields.io/badge/Discrord-red?style=for-the-badge&logo=discrod&logoColor=blue" alt="Discrord"/>
-  </a>
 </div>
+ <a align="center" href="https://discord.com/users/785141640087207966">
+    <img src="https://img.shields.io/badge/Discrord-blue?style=for-the-badge&logo=discrod&logoColor=white" alt="Discrord"/>
+  </a>
 
 - 🔭 I’m currently working on <a href="https://darhanger.github.io/rotations/">DarhangeR Rotations</a>
 - 🌱 I’m currently learning: <a href="https://www.lua.org">Lua</a>, <a href="https://www.python.org">Python</a>, <a href="https://dotnet.microsoft.com/en-us/languages/csharp">C#</a>, <a href="https://www.ecma-international.org/publications-and-standards/standards/ecma-262/">JavaScript</a>
