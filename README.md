@@ -1,5 +1,5 @@
 <div id="header" align="center">
- <h2>Hi, I'm Makaren</h2>
+ <h>Hi, I'm Makaren</h>
 </div>
 
 - 🔭 I’m currently working on <a href="https://darhanger.github.io/rotations/">DarhangeR Rotations</a>
