@@ -1,5 +1,8 @@
 <div id="header" align="center">
  <h>Hi, I'm Makaren</h>
+ <a href="https://discord.com/users/785141640087207966">
+    <img src="https://img.shields.io/badge/Discrord-red?style=for-the-badge&logo=discrod&logoColor=blue" alt="Discrord"/>
+  </a>
 </div>
 
 - 🔭 I’m currently working on <a href="https://darhanger.github.io/rotations/">DarhangeR Rotations</a>
