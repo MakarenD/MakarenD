@@ -27,6 +27,8 @@
 
 > 📦 137.9 kB Used in GitHub's Storage 
  > 
+> 🏆 0 Contributions in the Year 2025
+ > 
 > 🚫 Not Opted to Hire
  > 
 > 📜 1 Public Repository 
@@ -60,19 +62,16 @@ Sunday                   73 commits          █████████░░�
 🕑︎ Time Zone: Europe/Moscow
 
 💬 Programming Languages: 
-VB.NET                   7 mins              ████████████████████░░░░░   81.63 % 
-Other                    1 min               ████░░░░░░░░░░░░░░░░░░░░░   17.92 % 
-Binary                   0 secs              ░░░░░░░░░░░░░░░░░░░░░░░░░   00.46 % 
+No Activity Tracked This Week
 
 🔥 Editors: 
-Visual Studio            8 mins              █████████████████████████   100.00 % 
+No Activity Tracked This Week
 
 🐱‍💻 Projects: 
-VoyageHotel_CACHE        7 mins              ████████████████████░░░░░   81.77 % 
-VoyageHotel              1 min               █████░░░░░░░░░░░░░░░░░░░░   18.23 % 
+No Activity Tracked This Week
 
 💻 Operating System: 
-Windows                  8 mins              █████████████████████████   100.00 % 
+No Activity Tracked This Week
 ```
 
 **I Mostly Code in Lua** 
@@ -88,5 +87,5 @@ Python                   1 repo              ███░░░░░░░░�
 
 
 
- Last Updated on 17/06/2025 02:04:22 UTC
+ Last Updated on 18/06/2025 02:03:36 UTC
 <!--END_SECTION:waka-->
