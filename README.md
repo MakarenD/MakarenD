@@ -62,16 +62,17 @@ Sunday                   73 commits          █████████░░�
 🕑︎ Time Zone: Europe/Moscow
 
 💬 Programming Languages: 
-No Activity Tracked This Week
+Lua                      43 mins             █████████████████████████   98.62 % 
+TeX                      0 secs              ░░░░░░░░░░░░░░░░░░░░░░░░░   01.38 % 
 
 🔥 Editors: 
-No Activity Tracked This Week
+VS Code                  44 mins             █████████████████████████   100.00 % 
 
 🐱‍💻 Projects: 
-No Activity Tracked This Week
+DarhangerR               44 mins             █████████████████████████   100.00 % 
 
 💻 Operating System: 
-No Activity Tracked This Week
+Windows                  44 mins             █████████████████████████   100.00 % 
 ```
 
 **I Mostly Code in Lua** 
@@ -87,5 +88,5 @@ Python                   1 repo              ███░░░░░░░░�
 
 
 
- Last Updated on 29/07/2025 02:30:10 UTC
+ Last Updated on 30/07/2025 02:21:37 UTC
 <!--END_SECTION:waka-->
