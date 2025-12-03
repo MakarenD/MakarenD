@@ -17,73 +17,35 @@
 
 #
 <!--START_SECTION:waka-->
-![Code Time](http://img.shields.io/badge/Code%20Time-661%20hrs%2036%20mins-blue)
+![Code Time](http://img.shields.io/badge/Code%20Time-665%20hrs%2032%20mins-blue)
 
 ![Profile Views](http://img.shields.io/badge/Profile%20Views-2-blue)
 
-![Lines of code](https://img.shields.io/badge/From%20Hello%20World%20I%27ve%20Written-8.7%20thousand%20lines%20of%20code-blue)
+![Lines of code](https://img.shields.io/badge/From%20Hello%20World%20I%27ve%20Written-17.7%20thousand%20lines%20of%20code-blue)
 
 **🐱 My GitHub Data** 
 
-> 📦 42.2 kB Used in GitHub's Storage 
+> 📦 53.5 kB Used in GitHub's Storage 
  > 
-> 🏆 0 Contributions in the Year 2025
+> 🏆 2 Contributions in the Year 2025
  > 
 > 🚫 Not Opted to Hire
  > 
-> 📜 1 Public Repository 
+> 📜 2 Public Repositories 
  > 
-> 🔑 2 Private Repository 
+> 🔑 2 Private Repositories 
  > 
-**I'm an Early 🐤** 
-
-```text
-🌞 Morning                18 commits          ████░░░░░░░░░░░░░░░░░░░░░   16.22 % 
-🌆 Daytime                79 commits          ██████████████████░░░░░░░   71.17 % 
-🌃 Evening                11 commits          ██░░░░░░░░░░░░░░░░░░░░░░░   09.91 % 
-🌙 Night                  3 commits           █░░░░░░░░░░░░░░░░░░░░░░░░   02.70 % 
-```
-📅 **I'm Most Productive on Sunday** 
-
-```text
-Monday                   3 commits           █░░░░░░░░░░░░░░░░░░░░░░░░   02.70 % 
-Tuesday                  4 commits           █░░░░░░░░░░░░░░░░░░░░░░░░   03.60 % 
-Wednesday                11 commits          ██░░░░░░░░░░░░░░░░░░░░░░░   09.91 % 
-Thursday                 6 commits           █░░░░░░░░░░░░░░░░░░░░░░░░   05.41 % 
-Friday                   8 commits           ██░░░░░░░░░░░░░░░░░░░░░░░   07.21 % 
-Saturday                 13 commits          ███░░░░░░░░░░░░░░░░░░░░░░   11.71 % 
-Sunday                   66 commits          ███████████████░░░░░░░░░░   59.46 % 
-```
-
-
-📊 **This Week I Spent My Time On** 
-
-```text
-🕑︎ Time Zone: Europe/Moscow
-
-💬 Programming Languages: 
-No Activity Tracked This Week
-
-🔥 Editors: 
-No Activity Tracked This Week
-
-🐱‍💻 Projects: 
-No Activity Tracked This Week
-
-💻 Operating System: 
-No Activity Tracked This Week
-```
-
 **I Mostly Code in Lua** 
 
 ```text
-Lua                      2 repos             ████████████░░░░░░░░░░░░░   50.00 % 
-PHP                      1 repo              ██████░░░░░░░░░░░░░░░░░░░   25.00 % 
-HTML                     1 repo              ██████░░░░░░░░░░░░░░░░░░░   25.00 % 
+Lua                      2 repos             ██████████░░░░░░░░░░░░░░░   40.00 % 
+Python                   1 repo              █████░░░░░░░░░░░░░░░░░░░░   20.00 % 
+PHP                      1 repo              █████░░░░░░░░░░░░░░░░░░░░   20.00 % 
+HTML                     1 repo              █████░░░░░░░░░░░░░░░░░░░░   20.00 % 
 ```
 
 
 
 
- Last Updated on 02/12/2025 02:02:44 UTC
+ Last Updated on 03/12/2025 02:02:12 UTC
 <!--END_SECTION:waka-->
