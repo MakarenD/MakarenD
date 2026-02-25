@@ -11,17 +11,17 @@
 - ⚡ Fun fact: ...
 -->
 <!--START_SECTION:waka-->
-![Code Time](http://img.shields.io/badge/Code%20Time-729%20hrs%205%20mins-blue?style=flat)
+![Code Time](http://img.shields.io/badge/Code%20Time-729%20hrs%2034%20mins-blue?style=flat)
 
 ![Profile Views](http://img.shields.io/badge/Profile%20Views-0-blue?style=flat)
 
-![Lines of code](https://img.shields.io/badge/From%20Hello%20World%20I%27ve%20Written-341.19%20thousand%20lines%20of%20code-blue?style=flat)
+![Lines of code](https://img.shields.io/badge/From%20Hello%20World%20I%27ve%20Written-341.55%20thousand%20lines%20of%20code-blue?style=flat)
 
 **🐱 My GitHub Data** 
 
-> 📦 283.7 kB Used in GitHub's Storage 
+> 📦 283.8 kB Used in GitHub's Storage 
  > 
-> 🏆 28 Contributions in the Year 2026
+> 🏆 31 Contributions in the Year 2026
  > 
 > 🚫 Not Opted to Hire
  > 
@@ -29,50 +29,6 @@
  > 
 > 🔑 2 Private Repositories 
  > 
-**I'm an Early 🐤** 
-
-```text
-🌞 Morning                38 commits          ████░░░░░░░░░░░░░░░░░░░░░   16.10 % 
-🌆 Daytime                130 commits         ██████████████░░░░░░░░░░░   55.08 % 
-🌃 Evening                42 commits          ████░░░░░░░░░░░░░░░░░░░░░   17.80 % 
-🌙 Night                  26 commits          ███░░░░░░░░░░░░░░░░░░░░░░   11.02 % 
-```
-📅 **I'm Most Productive on Sunday** 
-
-```text
-Monday                   28 commits          ███░░░░░░░░░░░░░░░░░░░░░░   11.86 % 
-Tuesday                  26 commits          ███░░░░░░░░░░░░░░░░░░░░░░   11.02 % 
-Wednesday                35 commits          ████░░░░░░░░░░░░░░░░░░░░░   14.83 % 
-Thursday                 29 commits          ███░░░░░░░░░░░░░░░░░░░░░░   12.29 % 
-Friday                   23 commits          ██░░░░░░░░░░░░░░░░░░░░░░░   09.75 % 
-Saturday                 26 commits          ███░░░░░░░░░░░░░░░░░░░░░░   11.02 % 
-Sunday                   69 commits          ███████░░░░░░░░░░░░░░░░░░   29.24 % 
-```
-
-
-📊 **This Week I Spent My Time On** 
-
-```text
-🕑︎ Time Zone: Europe/Moscow
-
-💬 Programming Languages: 
-Markdown                 1 hr 2 mins         ████████████░░░░░░░░░░░░░   48.83 % 
-JSON                     30 mins             ██████░░░░░░░░░░░░░░░░░░░   23.33 % 
-PHP                      22 mins             ████░░░░░░░░░░░░░░░░░░░░░   17.74 % 
-JavaScript               13 mins             ███░░░░░░░░░░░░░░░░░░░░░░   10.10 % 
-
-🔥 Editors: 
-VS Code                  1 hr 42 mins        ████████████████████░░░░░   79.90 % 
-Cursor                   25 mins             █████░░░░░░░░░░░░░░░░░░░░   20.10 % 
-
-🐱‍💻 Projects: 
-AlbatrosWebSite          1 hr 34 mins        ██████████████████░░░░░░░   73.65 % 
-KonturExpansionChrome    33 mins             ███████░░░░░░░░░░░░░░░░░░   26.35 % 
-
-💻 Operating System: 
-Windows                  2 hrs 8 mins        █████████████████████████   100.00 % 
-```
-
 **I Mostly Code in Lua** 
 
 ```text
@@ -84,5 +40,5 @@ PHP                      1 repo              ██████░░░░░�
 
 
 
- Last Updated on 24/02/2026 02:44:22 UTC
+ Last Updated on 25/02/2026 02:44:55 UTC
 <!--END_SECTION:waka-->
