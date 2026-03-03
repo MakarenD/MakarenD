@@ -40,9 +40,6 @@
 ---
 
 ### 🏆 Achievements & Stats
-<p align="center">
-  <img src="https://github-profile-trophy.vercel.app/?username=MakarenD&theme=tokyonight&no-bg=true&margin-w=15&column=4" alt="Trophies" />
-</p>
 
 <div align="center">
   <img src="https://github-readme-stats.vercel.app/api?username=MakarenD&show_icons=true&theme=tokyonight&hide_border=true&count_private=true" height="170" />
@@ -57,11 +54,13 @@
 
 ### ⚡ Activity Calendar
 <p align="center">
-  <img src="https://github-readme-stats.vercel.app/api/calendar.gpg?username=MakarenD&theme=tokyonight" alt="GitHub Calendar" />
+  <img src="https://archive.readme-dinosaurs.site/api/month?username=MakarenD&theme=tokyonight" alt="GitHub Activity" />
 </p>
 
 ---
 
 <div align="center">
-  <img src="https://komarev.com/ghpvc/?username=MakarenD&label=Profile%20Views&color=00D2FF&style=for-the-badge" alt="Views" />
+  <a href="https://t.me/MakarenD">
+    <img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" />
+  </a>
 </div>
