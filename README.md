@@ -7,15 +7,18 @@
 <table>
   <tr>
     <td align="center" width="33%">
-      <strong>Backend & DB</strong><br/>
+      <strong>Backend & Data</strong><br/>
       <br/>
       <img src="https://img.shields.io/badge/.NET_8-512BD4?style=flat-square&logo=dotnet&logoColor=white" />
       <img src="https://img.shields.io/badge/ASP.NET_Core-512BD4?style=flat-square&logo=dotnet&logoColor=white" />
       <img src="https://img.shields.io/badge/C%23-239120?style=flat-square&logo=csharp&logoColor=white" />
+      <img src="https://img.shields.io/badge/REST_API-009688?style=flat-square&logo=api&logoColor=white" />
+      <img src="https://img.shields.io/badge/Swagger-85EA2D?style=flat-square&logo=swagger&logoColor=black" />
       <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white" />
       <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white" />
-      <img src="https://img.shields.io/badge/Caché-0083D0?style=flat-square&logo=intersystems&logoColor=white" />
+      <img src="https://img.shields.io/badge/JSON-000000?style=flat-square&logo=json&logoColor=white" />
       <img src="https://img.shields.io/badge/XML-CC6600?style=flat-square&logo=xml&logoColor=white" />
+      <img src="https://img.shields.io/badge/Caché-0083D0?style=flat-square&logo=intersystems&logoColor=white" />
     </td>
     <td align="center" width="33%">
       <strong>Frontend</strong><br/>
@@ -36,8 +39,8 @@
       <img src="https://img.shields.io/badge/macOS-000000?style=flat-square&logo=apple&logoColor=white" />
       <img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white" />
       <img src="https://img.shields.io/badge/Git-F05032?style=flat-square&logo=git&logoColor=white" />
-      <img src="https://img.shields.io/badge/Alpine_Linux-0D597F?style=flat-square&logo=alpine-linux&logoColor=white" />
       <img src="https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white" />
+      <img src="https://img.shields.io/badge/Alpine_Linux-0D597F?style=flat-square&logo=alpine-linux&logoColor=white" />
     </td>
   </tr>
 </table>
