@@ -10,8 +10,6 @@
 
 ### 🛠️ Мой технологический стек
 
-### 🛠️ Мой технологический стек
-
 <div align="center">
   <a href="https://skillicons.dev">
     <img src="https://skillicons.dev/icons?i=dotnet,cs,react,tailwind,js,postgres,mysql,docker,linux,windows,git,nodejs&theme=dark" />
