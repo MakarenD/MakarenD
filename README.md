@@ -10,13 +10,14 @@
 
 ### 🛠️ Мой технологический стек
 
+### 🛠️ Мой технологический стек
+
 <div align="center">
   <a href="https://skillicons.dev">
     <img src="https://skillicons.dev/icons?i=dotnet,cs,react,tailwind,js,postgres,mysql,docker,linux,windows,git,nodejs&theme=dark" />
   </a>
   <br><br>
   <img src="https://img.shields.io/badge/Caché-0083D0?style=flat-square&logo=intersystems&logoColor=white" />
-  <img src="https://img.shields.io/badge/Alpine_Linux-0D597F?style=flat-square&logo=alpine-linux&logoColor=white" />
 </div>
 
 ---
