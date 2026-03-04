@@ -3,7 +3,7 @@
 </div>
 
 <div align="center">
-  <em>Заливаю commits сучкам в repositories</em>
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=20&pause=2000&color=39D353&center=true&vCenter=true&width=600&lines=>_+git+push+origin+main;Заливаю+commits+сучкам+в+repositories...;>_+Everything+up-to-date!" alt="Git Push Animation" />
 </div>
 
 <br/>
@@ -36,4 +36,16 @@
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/MakarenD/MakarenD/output/github-metrics.svg" alt="Metrics" />
+</div>
+
+---
+
+### 🚀 Проекты, в которых я участвую
+
+<div align="center">
+  <a href="https://github.com/UNIVER-Project">
+    <img src="https://avatars.githubusercontent.com/u/231749927?s=200&v=4" width="90" alt="UNIVER-Project Logo" />
+    <br/>
+    <b>UNIVER-Project</b>
+  </a>
 </div>
