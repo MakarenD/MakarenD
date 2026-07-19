@@ -21,3 +21,17 @@ python -m playwright install chromium
 python -m unittest discover -s profile/tests -v
 python profile/qa_visual.py --assets dist --output qa-artifacts/timeline
 ```
+
+The portrait candidate stage is intentionally separate from the production hero.
+It uses the exact ignored `profile/avatar-source.png`, verifies its hash, and writes
+eight dark/light vector-stencil + glyph-fill variants for owner selection:
+
+```bash
+python profile/qa_portraits.py \
+  --avatar-source profile/avatar-source.png \
+  --output profile/qa
+```
+
+Open `profile/qa/portrait-candidates.html` or the contact sheet
+`profile/qa/portrait-candidates.png`. No candidate is copied into the production
+hero until its number is explicitly selected.

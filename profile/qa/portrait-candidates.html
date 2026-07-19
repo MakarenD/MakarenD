@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portrait candidate gallery</title>
+  <style>
+    :root { color-scheme: dark; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 28px; background: #0d1117; color: #e6edf3; }
+    body > header, main { width: min(100%, 972px); margin-inline: auto; }
+    body > header { margin-bottom: 24px; }
+    h1 { margin: 0 0 8px; color: #39c5cf; font-size: 22px; }
+    p { color: #8b949e; }
+    .reference, .candidate { margin: 0 0 28px; }
+    .reference { display: inline-block; width: 452px; vertical-align: top; margin-right: 16px; }
+    h2 { margin: 0; font-size: 14px; }
+    .reference h2 { margin-bottom: 10px; color: #8b949e; text-transform: uppercase; }
+    .reference img, figure img { display: block; width: 452px; height: 318px; }
+    .candidate { border-top: 1px solid #30363d; padding-top: 22px; }
+    .candidate > header { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 12px; }
+    .candidate > header div { display: flex; align-items: center; gap: 12px; }
+    .candidate > header p { margin: 0; max-width: 560px; text-align: right; font-size: 12px; }
+    .number { color: #39c5cf; font-size: 20px; }
+    .themes { display: grid; grid-template-columns: repeat(2, 452px); gap: 16px; }
+    figure { margin: 0; }
+    figcaption { margin-top: 7px; color: #8b949e; font-size: 11px; }
+    @media (max-width: 980px) {
+      body { padding: 16px; }
+      .reference { display: block; width: 100%; margin-right: 0; }
+      .reference img, figure img { width: 163px; height: auto; }
+      .themes { grid-template-columns: 1fr; }
+      .candidate > header { display: block; }
+      .candidate > header p { text-align: left; margin-top: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <header><h1>portrait.candidates</h1><p>Eight vector-stencil + glyph-fill variants. Dark and light are shown at the real README panel size; no final candidate is selected.</p></header>
+  <main><article class="reference"><h2>Source · fixed crop</h2><img src="source-preview.png" alt="Fixed crop of the source portrait"></article><article class="reference"><h2>Stencil · four semantic tones</h2><img src="stencil-reference.png" alt="Four-tone vector stencil reference"></article><article class="candidate" id="candidate-1">
+  <header><div><span class="number">01</span><h2>stencil-3-tone</h2></div><p>Three broad tones with restrained medium glyphs.</p></header>
+  <div class="themes">
+    <figure><img src="candidates/01-stencil-3-tone-dark.svg" alt="Candidate 1, dark theme"><figcaption>dark · IoU 0.780 · edge 0.883</figcaption></figure>
+    <figure><img src="candidates/01-stencil-3-tone-light.svg" alt="Candidate 1, light theme"><figcaption>light · IoU 0.832 · edge 0.899</figcaption></figure>
+  </div>
+</article><article class="candidate" id="candidate-2">
+  <header><div><span class="number">02</span><h2>stencil-4-tone</h2></div><p>Four semantic tones preserve the face, hand, beard, and hoodie planes.</p></header>
+  <div class="themes">
+    <figure><img src="candidates/02-stencil-4-tone-dark.svg" alt="Candidate 2, dark theme"><figcaption>dark · IoU 0.831 · edge 0.966</figcaption></figure>
+    <figure><img src="candidates/02-stencil-4-tone-light.svg" alt="Candidate 2, light theme"><figcaption>light · IoU 0.863 · edge 0.961</figcaption></figure>
+  </div>
+</article><article class="candidate" id="candidate-3">
+  <header><div><span class="number">03</span><h2>dense-glyph-fill</h2></div><p>Small tightly packed glyphs retain the most stencil detail.</p></header>
+  <div class="themes">
+    <figure><img src="candidates/03-dense-glyph-fill-dark.svg" alt="Candidate 3, dark theme"><figcaption>dark · IoU 0.824 · edge 0.985</figcaption></figure>
+    <figure><img src="candidates/03-dense-glyph-fill-light.svg" alt="Candidate 3, light theme"><figcaption>light · IoU 0.859 · edge 0.984</figcaption></figure>
+  </div>
+</article><article class="candidate" id="candidate-4">
+  <header><div><span class="number">04</span><h2>sparse-glyph-fill</h2></div><p>Large widely spaced glyphs test whether the silhouette reads unaided.</p></header>
+  <div class="themes">
+    <figure><img src="candidates/04-sparse-glyph-fill-dark.svg" alt="Candidate 4, dark theme"><figcaption>dark · IoU 0.707 · edge 0.848</figcaption></figure>
+    <figure><img src="candidates/04-sparse-glyph-fill-light.svg" alt="Candidate 4, light theme"><figcaption>light · IoU 0.755 · edge 0.818</figcaption></figure>
+  </div>
+</article><article class="candidate" id="candidate-5">
+  <header><div><span class="number">05</span><h2>contour-emphasis</h2></div><p>Sparse interiors with stronger glyph-built critical contours.</p></header>
+  <div class="themes">
+    <figure><img src="candidates/05-contour-emphasis-dark.svg" alt="Candidate 5, dark theme"><figcaption>dark · IoU 0.723 · edge 0.870</figcaption></figure>
+    <figure><img src="candidates/05-contour-emphasis-light.svg" alt="Candidate 5, light theme"><figcaption>light · IoU 0.757 · edge 0.839</figcaption></figure>
+  </div>
+</article><article class="candidate" id="candidate-6">
+  <header><div><span class="number">06</span><h2>beard-and-gesture-emphasis</h2></div><p>Denser beard, hair, eye ring, and hand gesture with quieter skin.</p></header>
+  <div class="themes">
+    <figure><img src="candidates/06-beard-and-gesture-emphasis-dark.svg" alt="Candidate 6, dark theme"><figcaption>dark · IoU 0.803 · edge 0.933</figcaption></figure>
+    <figure><img src="candidates/06-beard-and-gesture-emphasis-light.svg" alt="Candidate 6, light theme"><figcaption>light · IoU 0.842 · edge 0.934</figcaption></figure>
+  </div>
+</article><article class="candidate" id="candidate-7">
+  <header><div><span class="number">07</span><h2>large-glyph-poster</h2></div><p>Very large symbols make the construction unmistakably typographic.</p></header>
+  <div class="themes">
+    <figure><img src="candidates/07-large-glyph-poster-dark.svg" alt="Candidate 7, dark theme"><figcaption>dark · IoU 0.718 · edge 0.919</figcaption></figure>
+    <figure><img src="candidates/07-large-glyph-poster-light.svg" alt="Candidate 7, light theme"><figcaption>light · IoU 0.769 · edge 0.930</figcaption></figure>
+  </div>
+</article><article class="candidate" id="candidate-8">
+  <header><div><span class="number">08</span><h2>mixed-size-glyphs</h2></div><p>Mixed glyph sizes and slight row rotations follow the portrait curvature.</p></header>
+  <div class="themes">
+    <figure><img src="candidates/08-mixed-size-glyphs-dark.svg" alt="Candidate 8, dark theme"><figcaption>dark · IoU 0.810 · edge 0.967</figcaption></figure>
+    <figure><img src="candidates/08-mixed-size-glyphs-light.svg" alt="Candidate 8, light theme"><figcaption>light · IoU 0.842 · edge 0.958</figcaption></figure>
+  </div>
+</article></main>
+</body>
+</html>

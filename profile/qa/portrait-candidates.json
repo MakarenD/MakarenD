@@ -1,0 +1,255 @@
+{
+  "pipeline": "fixed crop -> art-directed semantic masks -> four-tone vector stencil -> clipped glyph fill -> glyph contours",
+  "source": {
+    "path": "profile/avatar-source.png",
+    "sha256": "9e2480c7723b80734dcb8def7b71ef35abfec83fb7ecbf5a1e57beff4f1712ac",
+    "expected_sha256": "9e2480c7723b80734dcb8def7b71ef35abfec83fb7ecbf5a1e57beff4f1712ac",
+    "crop_pixels": {
+      "x": 0,
+      "y": 100,
+      "width": 1050,
+      "height": 1200
+    }
+  },
+  "panel_size": [
+    452,
+    318
+  ],
+  "rejection_thresholds": {
+    "silhouette_iou": 0.7,
+    "edge_overlap": 0.8
+  },
+  "candidates": [
+    {
+      "number": 1,
+      "name": "stencil-3-tone",
+      "description": "Three broad tones with restrained medium glyphs.",
+      "tone_count": 3,
+      "files": {
+        "dark": {
+          "svg": "candidates/01-stencil-3-tone-dark.svg",
+          "png": "candidates/01-stencil-3-tone-dark.png"
+        },
+        "light": {
+          "svg": "candidates/01-stencil-3-tone-light.svg",
+          "png": "candidates/01-stencil-3-tone-light.png"
+        }
+      },
+      "metrics": {
+        "dark": {
+          "silhouette_iou": 0.7805,
+          "edge_overlap": 0.8828,
+          "ink_to_stencil_ratio": 0.0814
+        },
+        "light": {
+          "silhouette_iou": 0.832,
+          "edge_overlap": 0.8995,
+          "ink_to_stencil_ratio": 0.0897
+        }
+      }
+    },
+    {
+      "number": 2,
+      "name": "stencil-4-tone",
+      "description": "Four semantic tones preserve the face, hand, beard, and hoodie planes.",
+      "tone_count": 4,
+      "files": {
+        "dark": {
+          "svg": "candidates/02-stencil-4-tone-dark.svg",
+          "png": "candidates/02-stencil-4-tone-dark.png"
+        },
+        "light": {
+          "svg": "candidates/02-stencil-4-tone-light.svg",
+          "png": "candidates/02-stencil-4-tone-light.png"
+        }
+      },
+      "metrics": {
+        "dark": {
+          "silhouette_iou": 0.8307,
+          "edge_overlap": 0.966,
+          "ink_to_stencil_ratio": 0.1012
+        },
+        "light": {
+          "silhouette_iou": 0.8631,
+          "edge_overlap": 0.9605,
+          "ink_to_stencil_ratio": 0.1009
+        }
+      }
+    },
+    {
+      "number": 3,
+      "name": "dense-glyph-fill",
+      "description": "Small tightly packed glyphs retain the most stencil detail.",
+      "tone_count": 4,
+      "files": {
+        "dark": {
+          "svg": "candidates/03-dense-glyph-fill-dark.svg",
+          "png": "candidates/03-dense-glyph-fill-dark.png"
+        },
+        "light": {
+          "svg": "candidates/03-dense-glyph-fill-light.svg",
+          "png": "candidates/03-dense-glyph-fill-light.png"
+        }
+      },
+      "metrics": {
+        "dark": {
+          "silhouette_iou": 0.8236,
+          "edge_overlap": 0.9848,
+          "ink_to_stencil_ratio": 0.1728
+        },
+        "light": {
+          "silhouette_iou": 0.8587,
+          "edge_overlap": 0.9841,
+          "ink_to_stencil_ratio": 0.1737
+        }
+      }
+    },
+    {
+      "number": 4,
+      "name": "sparse-glyph-fill",
+      "description": "Large widely spaced glyphs test whether the silhouette reads unaided.",
+      "tone_count": 3,
+      "files": {
+        "dark": {
+          "svg": "candidates/04-sparse-glyph-fill-dark.svg",
+          "png": "candidates/04-sparse-glyph-fill-dark.png"
+        },
+        "light": {
+          "svg": "candidates/04-sparse-glyph-fill-light.svg",
+          "png": "candidates/04-sparse-glyph-fill-light.png"
+        }
+      },
+      "metrics": {
+        "dark": {
+          "silhouette_iou": 0.7069,
+          "edge_overlap": 0.8479,
+          "ink_to_stencil_ratio": 0.074
+        },
+        "light": {
+          "silhouette_iou": 0.7554,
+          "edge_overlap": 0.8183,
+          "ink_to_stencil_ratio": 0.0752
+        }
+      }
+    },
+    {
+      "number": 5,
+      "name": "contour-emphasis",
+      "description": "Sparse interiors with stronger glyph-built critical contours.",
+      "tone_count": 3,
+      "files": {
+        "dark": {
+          "svg": "candidates/05-contour-emphasis-dark.svg",
+          "png": "candidates/05-contour-emphasis-dark.png"
+        },
+        "light": {
+          "svg": "candidates/05-contour-emphasis-light.svg",
+          "png": "candidates/05-contour-emphasis-light.png"
+        }
+      },
+      "metrics": {
+        "dark": {
+          "silhouette_iou": 0.7231,
+          "edge_overlap": 0.8696,
+          "ink_to_stencil_ratio": 0.0944
+        },
+        "light": {
+          "silhouette_iou": 0.7573,
+          "edge_overlap": 0.8385,
+          "ink_to_stencil_ratio": 0.1006
+        }
+      }
+    },
+    {
+      "number": 6,
+      "name": "beard-and-gesture-emphasis",
+      "description": "Denser beard, hair, eye ring, and hand gesture with quieter skin.",
+      "tone_count": 4,
+      "files": {
+        "dark": {
+          "svg": "candidates/06-beard-and-gesture-emphasis-dark.svg",
+          "png": "candidates/06-beard-and-gesture-emphasis-dark.png"
+        },
+        "light": {
+          "svg": "candidates/06-beard-and-gesture-emphasis-light.svg",
+          "png": "candidates/06-beard-and-gesture-emphasis-light.png"
+        }
+      },
+      "metrics": {
+        "dark": {
+          "silhouette_iou": 0.8027,
+          "edge_overlap": 0.9333,
+          "ink_to_stencil_ratio": 0.1078
+        },
+        "light": {
+          "silhouette_iou": 0.8421,
+          "edge_overlap": 0.9343,
+          "ink_to_stencil_ratio": 0.1192
+        }
+      }
+    },
+    {
+      "number": 7,
+      "name": "large-glyph-poster",
+      "description": "Very large symbols make the construction unmistakably typographic.",
+      "tone_count": 3,
+      "files": {
+        "dark": {
+          "svg": "candidates/07-large-glyph-poster-dark.svg",
+          "png": "candidates/07-large-glyph-poster-dark.png"
+        },
+        "light": {
+          "svg": "candidates/07-large-glyph-poster-light.svg",
+          "png": "candidates/07-large-glyph-poster-light.png"
+        }
+      },
+      "metrics": {
+        "dark": {
+          "silhouette_iou": 0.7177,
+          "edge_overlap": 0.9195,
+          "ink_to_stencil_ratio": 0.0971
+        },
+        "light": {
+          "silhouette_iou": 0.769,
+          "edge_overlap": 0.9296,
+          "ink_to_stencil_ratio": 0.1047
+        }
+      }
+    },
+    {
+      "number": 8,
+      "name": "mixed-size-glyphs",
+      "description": "Mixed glyph sizes and slight row rotations follow the portrait curvature.",
+      "tone_count": 4,
+      "files": {
+        "dark": {
+          "svg": "candidates/08-mixed-size-glyphs-dark.svg",
+          "png": "candidates/08-mixed-size-glyphs-dark.png"
+        },
+        "light": {
+          "svg": "candidates/08-mixed-size-glyphs-light.svg",
+          "png": "candidates/08-mixed-size-glyphs-light.png"
+        }
+      },
+      "metrics": {
+        "dark": {
+          "silhouette_iou": 0.8099,
+          "edge_overlap": 0.9667,
+          "ink_to_stencil_ratio": 0.1115
+        },
+        "light": {
+          "silhouette_iou": 0.8421,
+          "edge_overlap": 0.9575,
+          "ink_to_stencil_ratio": 0.1089
+        }
+      }
+    }
+  ],
+  "contact_sheet": "portrait-candidates.png",
+  "html": "portrait-candidates.html",
+  "browser_screenshots": [
+    "portrait-gallery-desktop.png",
+    "portrait-gallery-mobile.png"
+  ],
+  "selected_candidate": null
+}

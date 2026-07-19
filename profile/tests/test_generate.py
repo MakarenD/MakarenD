@@ -19,6 +19,7 @@ PROFILE_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROFILE_DIR))
 
 import generate  # noqa: E402
+import portrait_candidates  # noqa: E402
 import qa_portraits  # noqa: E402
 
 
@@ -132,9 +133,7 @@ class PortraitPipelineTests(unittest.TestCase):
         self.assertTrue(glyphs & set(generate.PORTRAIT_DETAIL_GLYPHS))
 
     def test_committed_gesture_portrait_preserves_recognition_anchors(self) -> None:
-        mosaic = generate.load_portrait_mosaic(
-            PROFILE_DIR / "portrait-mosaic.json"
-        )
+        mosaic = generate.load_portrait_mosaic(PROFILE_DIR / "portrait-mosaic.json")
         rows = tuple("".join(cell.glyph for cell in row) for row in mosaic.cells)
         visible_ratio = mosaic.visible_cells / (mosaic.columns * mosaic.rows)
         pupils = [
@@ -200,31 +199,93 @@ class PortraitPipelineTests(unittest.TestCase):
                 )
                 self.assertEqual(mosaic.variant, variant)
 
-    def test_qa_presets_cover_real_density_crop_and_palette_variants(self) -> None:
-        presets = qa_portraits.portrait_presets(self.crop)
+    def test_qa_stage_exposes_eight_vector_stencil_candidates(self) -> None:
         self.assertEqual(
-            tuple(preset.name for preset in presets), generate.PORTRAIT_VARIANTS
+            tuple(preset.name for preset in portrait_candidates.CANDIDATES),
+            (
+                "stencil-3-tone",
+                "stencil-4-tone",
+                "dense-glyph-fill",
+                "sparse-glyph-fill",
+                "contour-emphasis",
+                "beard-and-gesture-emphasis",
+                "large-glyph-poster",
+                "mixed-size-glyphs",
+            ),
         )
-        self.assertLess(presets[0].columns, generate.PORTRAIT_COLUMNS)
-        self.assertEqual(presets[1].crop, self.crop)
-        self.assertEqual(presets[-1].columns, generate.PORTRAIT_COLUMNS)
-        self.assertEqual(presets[-1].crop, self.crop)
+        self.assertEqual(qa_portraits.MIN_SILHOUETTE_IOU, 0.70)
+        self.assertEqual(qa_portraits.MIN_EDGE_OVERLAP, 0.80)
 
-        image = portrait_fixture()
-        same_resolution_mosaics = [
-            generate.portrait_mosaic(
-                image,
-                self.crop,
-                variant=variant,
-                columns=generate.PORTRAIT_COLUMNS,
+    def test_candidate_svg_uses_paths_only_as_hidden_masks_and_clips(self) -> None:
+        signatures = set()
+        for preset in portrait_candidates.CANDIDATES:
+            themed_text = []
+            for theme in portrait_candidates.THEMES.values():
+                svg = portrait_candidates.render_candidate_svg(preset, theme)
+                portrait_candidates.validate_glyph_vocabulary(svg)
+                root = ET.fromstring(svg)
+                parent = {
+                    child: element for element in root.iter() for child in element
+                }
+                paths = [
+                    element for element in root.iter() if element.tag.endswith("path")
+                ]
+                texts = [
+                    element for element in root.iter() if element.tag.endswith("text")
+                ]
+                self.assertGreater(len(paths), 10)
+                self.assertGreater(len(texts), 100)
+                for path in paths:
+                    ancestors = []
+                    current = path
+                    while current in parent:
+                        current = parent[current]
+                        ancestors.append(current)
+                    self.assertTrue(
+                        any(node.tag.endswith("defs") for node in ancestors)
+                    )
+                lowered = svg.lower()
+                self.assertNotIn("<image", lowered)
+                self.assertNotIn("base64", lowered)
+                self.assertNotIn("<script", lowered)
+                self.assertNotIn("javascript:", lowered)
+                themed_text.append(
+                    tuple(
+                        (
+                            element.attrib.get("x"),
+                            element.attrib.get("y"),
+                            element.attrib.get("font-size"),
+                            element.text,
+                        )
+                        for element in texts
+                    )
+                )
+            self.assertEqual(themed_text[0], themed_text[1])
+            signatures.add(themed_text[0])
+        self.assertEqual(len(signatures), 8)
+
+    def test_candidate_source_is_the_exact_reviewed_photo_and_crop(self) -> None:
+        self.assertEqual(
+            portrait_candidates.EXPECTED_SOURCE_SHA256,
+            "9e2480c7723b80734dcb8def7b71ef35abfec83fb7ecbf5a1e57beff4f1712ac",
+        )
+        self.assertEqual(portrait_candidates.SOURCE_CROP, (0, 100, 1050, 1300))
+        with tempfile.TemporaryDirectory() as temp:
+            missing = Path(temp) / "missing.png"
+            with self.assertRaises(FileNotFoundError):
+                portrait_candidates.load_source(missing)
+
+            mismatched = Path(temp) / "mismatched.png"
+            Image.new("RGB", (1122, 1402), "white").save(mismatched)
+            with self.assertRaises(ValueError):
+                portrait_candidates.load_source(mismatched)
+
+        if portrait_candidates.LOCAL_AVATAR.is_file():
+            self.assertEqual(
+                portrait_candidates.source_sha256(portrait_candidates.LOCAL_AVATAR),
+                portrait_candidates.EXPECTED_SOURCE_SHA256,
             )
-            for variant in generate.PORTRAIT_VARIANTS
-        ]
-        signatures = {
-            tuple("".join(cell.glyph for cell in row) for row in mosaic.cells)
-            for mosaic in same_resolution_mosaics
-        }
-        self.assertEqual(len(signatures), len(presets))
+            self.assertEqual(portrait_candidates.load_source().size, (1050, 1200))
 
     def test_derived_mosaic_cache_round_trips(self) -> None:
         mosaic = generate.portrait_mosaic(

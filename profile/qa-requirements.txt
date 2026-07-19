@@ -1,1 +1,2 @@
 playwright==1.61.0
+resvg-py==0.3.3
