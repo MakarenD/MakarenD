@@ -5,5 +5,13 @@
   "role": "Software Engineer · Full-stack Developer",
   "focus": ".NET · Web · Python",
   "status": "building reliable systems",
-  "location": "Europe"
+  "location": "Europe",
+  "portrait": {
+    "crop": {
+      "x": 0.1,
+      "y": 0.06,
+      "width": 0.8,
+      "height": 0.9
+    }
+  }
 }

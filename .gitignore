@@ -1,3 +1,5 @@
 __pycache__/
 *.py[cod]
 .venv/
+profile/avatar-source.png
+qa-artifacts/
