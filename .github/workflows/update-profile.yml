@@ -1,56 +1,66 @@
-name: Generate GitHub Profile Stats
+name: Update profile graphics
 
 on:
   schedule:
-    - cron: "0 0 * * *" # Обновляется каждый день в полночь
-  workflow_dispatch: # Позволяет запускать вручную
+    - cron: "17 0 * * *"
+  workflow_dispatch:
   push:
     branches:
-    - main
+      - main
+    paths:
+      - ".github/workflows/update-profile.yml"
+      - "profile/**"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: profile-graphics
+  cancel-in-progress: false
 
 jobs:
-  build:
+  generate:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    timeout-minutes: 10
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Generate GitHub Snake
-        uses: Platane/snk/svg-only@v3
+      - name: Check out source
+        uses: actions/checkout@v7
         with:
-          github_user_name: ${{ github.repository_owner }}
-          outputs: |
-            dist/github-contribution-grid-snake.svg
-            dist/github-contribution-grid-snake-dark.svg?palette=github-dark
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: profile/requirements.txt
+
+      - name: Install dependencies
+        run: python -m pip install --disable-pip-version-check -r profile/requirements.txt
+
+      - name: Run generator tests
+        run: python -m unittest discover -s profile/tests -v
+
+      - name: Generate profile graphics
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PROFILE_GITHUB_TOKEN: ${{ secrets.METRICS_TOKEN || github.token }}
+        run: python profile/generate.py --output dist
 
-      - name: Generate GitHub Metrics (IsoCalendar & Languages)
-        uses: lowlighter/metrics@latest
-        with:
-          filename: dist/github-metrics.svg
-          token: ${{ secrets.METRICS_TOKEN }}
-          user: ${{ github.repository_owner }}
-          template: classic
-          base: header, activity, repositories
-          # Изометрический 3D календарь
-          plugin_isocalendar: yes
-          plugin_isocalendar_duration: half-year
-          # Статистика по языкам (круговая диаграмма)
-          plugin_languages: yes
-          plugin_languages_ignored: html, css
-          plugin_languages_limit: 8
-          plugin_languages_details: bytes-size, percentage
-          # Явно отключаем просмотры профиля
-          plugin_traffic: no
-
-      - name: Push to output branch
-        uses: crazy-max/ghaction-github-pages@v3.1.0
-        with:
-          target_branch: output
-          build_dir: dist
+      - name: Publish generated assets
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OUTPUT_DIR: ${{ runner.temp }}/profile-output
+        run: |
+          git fetch origin output
+          git worktree add --detach "$OUTPUT_DIR" origin/output
+          cp dist/hero-dark.svg dist/hero-light.svg "$OUTPUT_DIR"/
+          cp dist/activity-dark.svg dist/activity-light.svg "$OUTPUT_DIR"/
+          git -C "$OUTPUT_DIR" config user.name "github-actions[bot]"
+          git -C "$OUTPUT_DIR" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C "$OUTPUT_DIR" add hero-dark.svg hero-light.svg activity-dark.svg activity-light.svg
+          if git -C "$OUTPUT_DIR" diff --cached --quiet; then
+            echo "Profile graphics are already current."
+          else
+            git -C "$OUTPUT_DIR" commit -m "Update profile graphics"
+            git -C "$OUTPUT_DIR" push origin HEAD:output
+          fi

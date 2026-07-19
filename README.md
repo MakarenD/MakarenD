@@ -1,89 +1,66 @@
-<div align="center">
-  <img
-    src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=35&pause=1000&color=00D2FF&center=true&vCenter=true&width=500&lines=SOFTWARE+ENGINEER;FULLSTACK+DEVELOPER;.NET+CORE+ENTHUSIAST"
-    alt="Typing SVG"
+<picture>
+  <source
+    media="(prefers-color-scheme: dark)"
+    srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/hero-dark.svg"
   />
-</div>
-
-<br/>
-
-### 🛠️ Мой технологический стек
-
-<div align="center">
-  <a href="https://skillicons.dev">
-    <img
-      src="https://skillicons.dev/icons?i=dotnet,cs,react,tailwind,js,nodejs,php,lua,postgres,mysql,docker,linux,apple,windows,git&theme=dark"
-      alt="Technology Stack"
-    />
-  </a>
-
-<br/><br/>
-
-<img
- src="https://img.shields.io/badge/Caché-0083D0?style=flat-square&logo=intersystems&logoColor=white"
- alt="InterSystems Caché"
-/>
-
-</div>
-
-<br/>
-
-<div align="center">
-  <img
-    src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=20&pause=2000&color=39D353&center=true&vCenter=true&width=600&lines=%3E_%20git%20push%20origin%20main;%D0%97%D0%B0%D0%BB%D0%B8%D0%B2%D0%B0%D1%8E%20commits%20%D1%81%D1%83%D1%87%D0%BA%D0%B0%D0%BC%20%D0%B2%20repositories...;%3E_%20Everything%20up-to-date!"
-    alt="Git Push Animation"
+  <source
+    media="(prefers-color-scheme: light)"
+    srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/hero-light.svg"
   />
-</div>
-
----
-
-### 🐍 Активность (GitHub Snake)
-
-<div align="center">
-  <picture>
-    <source
-      media="(prefers-color-scheme: dark)"
-      srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/github-contribution-grid-snake-dark.svg"
-    />
-    <source
-      media="(prefers-color-scheme: light)"
-      srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/github-contribution-grid-snake.svg"
-    />
-    <img
-      src="https://raw.githubusercontent.com/MakarenD/MakarenD/output/github-contribution-grid-snake-dark.svg"
-      alt="GitHub Contribution Grid Snake Animation"
-    />
-  </picture>
-</div>
-
----
-
-### 📊 Статистика (Metrics)
-
-<div align="center">
   <img
-    src="https://raw.githubusercontent.com/MakarenD/MakarenD/output/github-metrics.svg"
-    alt="GitHub Metrics"
+    src="https://raw.githubusercontent.com/MakarenD/MakarenD/output/hero-light.svg"
+    alt="Makaren system profile with an ASCII portrait"
+    width="100%"
   />
-</div>
+</picture>
 
----
+## Core stack
 
-### 🚀 Проекты, в которых я участвую
+```text
+backend    .NET · C# · Node.js · PHP · Lua
+frontend   React · JavaScript · Tailwind CSS
+data       PostgreSQL · MySQL · InterSystems Caché
+platform   Docker · Linux · macOS · Windows · Git
+```
 
-<div align="center">
-  <a href="https://github.com/UNIVER-Project">
-    <img
-      src="https://avatars.githubusercontent.com/u/231749927?s=200&v=4"
-      width="90"
-      alt="UNIVER-Project Logo"
-    />
+## GitHub activity
 
+<picture>
+  <source
+    media="(prefers-color-scheme: dark)"
+    srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/activity-dark.svg"
+  />
+  <source
+    media="(prefers-color-scheme: light)"
+    srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/activity-light.svg"
+  />
+  <img
+    src="https://raw.githubusercontent.com/MakarenD/MakarenD/output/activity-light.svg"
+    alt="MakarenD GitHub contribution activity for the past year"
+    width="100%"
+  />
+</picture>
 
-<br/>
+## Projects I contribute to
 
-<b>UNIVER-Project</b>
+<!-- PROJECTS:START -->
+<table>
+  <tr>
+    <td width="76" align="center">
+      <a href="https://github.com/UNIVER-Project">
+        <img
+          src="https://avatars.githubusercontent.com/u/231749927?s=200&v=4"
+          width="56"
+          alt="UNIVER-Project logo"
+        />
+      </a>
+    </td>
+    <td>
+      <strong><a href="https://github.com/UNIVER-Project">UNIVER-Project</a></strong><br />
+      <sub>GitHub organization.</sub>
+    </td>
+  </tr>
+</table>
+<!-- PROJECTS:END -->
 
-
-  </a>
-</div>
+<!-- Add another project by copying the <tr> block above inside the PROJECTS markers and updating its URL, image, name, and description. -->
