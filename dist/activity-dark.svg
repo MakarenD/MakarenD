@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 1000 220" role="img" aria-labelledby="title desc">
   <title id="title">GitHub contribution activity</title>
-  <desc id="desc">426 contributions from 2025-07-20 → 2026-07-19</desc>
+  <desc id="desc">431 contributions from 2025-07-20 → 2026-07-19</desc>
   <style>
     .reduced-final{display:none}
     @media (prefers-reduced-motion: reduce){.activity-motion-layer{display:none}.activity-reduced-final{display:inline}}
@@ -8,7 +8,7 @@
   <rect width="1000" height="220" rx="18" fill="#0d1117"/>
   <rect x="1" y="1" width="998" height="218" rx="17" fill="none" stroke="#30363d"/>
   <text x="32" y="37" fill="#39c5cf" font-family="ui-monospace,SFMono-Regular,Consolas,monospace" font-size="15" font-weight="600">activity.log</text>
-  <text x="968" y="37" text-anchor="end" fill="#8b949e" font-family="ui-monospace,SFMono-Regular,Consolas,monospace" font-size="13">426 contributions</text>
+  <text x="968" y="37" text-anchor="end" fill="#8b949e" font-family="ui-monospace,SFMono-Regular,Consolas,monospace" font-size="13">431 contributions</text>
   <line x1="32" y1="51" x2="968" y2="51" stroke="#30363d"/>
   <defs>
     <g id="activity-colored-cells-dark">
@@ -106,11 +106,11 @@
       <rect class="colored-cell" x="820" y="124" width="10" height="10" rx="2" fill="#26a641"><title>2026-07-16: 14 contributions</title></rect>
       <rect class="colored-cell" x="820" y="137" width="10" height="10" rx="2" fill="#006d32"><title>2026-07-17: 10 contributions</title></rect>
       <rect class="colored-cell" x="820" y="150" width="10" height="10" rx="2" fill="#006d32"><title>2026-07-18: 6 contributions</title></rect>
-      <rect class="colored-cell" x="833" y="72" width="10" height="10" rx="2" fill="#0e4429"><title>2026-07-19: 5 contributions</title></rect>
+      <rect class="colored-cell" x="833" y="72" width="10" height="10" rx="2" fill="#006d32"><title>2026-07-19: 10 contributions</title></rect>
     </g>
     <clipPath id="activity-reveal-dark">
       <rect x="157" y="70" width="686" height="91">
-        <animate class="smil-motion" attributeName="width" dur="12s" repeatCount="indefinite" calcMode="linear" values="0;0;686;686;686;0;0" keyTimes="0;0.04;0.25;0.86;0.88;0.90;1"/>
+        <animate class="smil-motion" attributeName="width" dur="5.4s" repeatCount="indefinite" calcMode="linear" values="0;686;686;0;0" keyTimes="0;0.333333;0.888889;0.944444;1"/>
       </rect>
     </clipPath>
   </defs>
@@ -484,8 +484,8 @@
   <g class="activity-motion-layer">
     <g id="activity-colored-reveal-layer" clip-path="url(#activity-reveal-dark)"><use href="#activity-colored-cells-dark"/></g>
     <rect class="activity-scan-line" x="157" y="68" width="2" height="95" rx="1" fill="#39c5cf">
-      <animate class="smil-motion" attributeName="x" dur="12s" repeatCount="indefinite" values="157;157;843;843;157;157" keyTimes="0;0.04;0.25;0.86;0.90;1"/>
-      <animate class="smil-motion" attributeName="opacity" dur="12s" repeatCount="indefinite" values="0;0.8;0.8;0;0;0" keyTimes="0;0.04;0.25;0.27;0.90;1"/>
+      <animate class="smil-motion" attributeName="x" dur="5.4s" repeatCount="indefinite" values="157;843;843;157;157" keyTimes="0;0.333333;0.888889;0.944444;1"/>
+      <animate class="smil-motion" attributeName="opacity" dur="5.4s" repeatCount="indefinite" values="0.8;0.8;0;0;0" keyTimes="0;0.333333;0.355556;0.944444;1"/>
     </rect>
   </g>
   <use class="activity-reduced-final reduced-final" href="#activity-colored-cells-dark"/>

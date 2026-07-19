@@ -25,17 +25,34 @@ DEFAULT_OUTPUT = PROFILE_DIR.parent / "dist"
 LOCAL_AVATAR = PROFILE_DIR / "avatar-source.png"
 GRAPHQL_URL = "https://api.github.com/graphql"
 PORTRAIT_VARIANTS = (
-    "density-only",
-    "opacity-based",
+    "reduced-density",
+    "stronger-crop",
     "edge-enhanced",
-    "high-contrast",
     "background-suppressed",
-    "combined",
+    "simplified-palette",
+    "combined-tone-edge",
 )
-DEFAULT_PORTRAIT_VARIANT = "combined"
-PORTRAIT_COLUMNS = 66
-TONE_OPACITIES = (0.26, 0.37, 0.49, 0.61, 0.72, 0.82, 0.92, 1.0)
-ANIMATION_CYCLE_SECONDS = 12
+DEFAULT_PORTRAIT_VARIANT = "combined-tone-edge"
+PORTRAIT_COLUMNS = 48
+PORTRAIT_CACHE_VERSION = 2
+PORTRAIT_TONE_GLYPHS = (".", ":", "+", "#", "@")
+SIMPLIFIED_TONE_GLYPHS = (".", ".", "+", "#", "#")
+PORTRAIT_EDGE_GLYPHS = frozenset("-|/\\")
+TONE_OPACITIES = (0.38, 0.55, 0.70, 0.86, 1.0)
+DEFAULT_CROP_VALUES = (0.28, 0.02, 0.64, 0.86)
+
+ANIMATION_REVEAL_SECONDS = 1.8
+ANIMATION_HOLD_SECONDS = 3.0
+ANIMATION_RESET_SECONDS = 0.3
+ANIMATION_PAUSE_SECONDS = 0.3
+ANIMATION_CYCLE_SECONDS = sum(
+    (
+        ANIMATION_REVEAL_SECONDS,
+        ANIMATION_HOLD_SECONDS,
+        ANIMATION_RESET_SECONDS,
+        ANIMATION_PAUSE_SECONDS,
+    )
+)
 LEVELS = {
     "NONE": 0,
     "FIRST_QUARTILE": 1,
@@ -100,7 +117,7 @@ def save_portrait_mosaic(mosaic: PortraitMosaic, path: Path) -> None:
     """Persist the derived glyph grid without storing the source photograph."""
 
     payload = {
-        "version": 1,
+        "version": PORTRAIT_CACHE_VERSION,
         "variant": mosaic.variant,
         "columns": mosaic.columns,
         "rows": mosaic.rows,
@@ -124,13 +141,16 @@ def load_portrait_mosaic(path: Path) -> PortraitMosaic:
     except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError) as exc:
         raise GenerationError(f"Cannot read portrait mosaic cache: {path}") from exc
 
-    if payload.get("version") != 1 or variant not in PORTRAIT_VARIANTS:
+    if (
+        payload.get("version") != PORTRAIT_CACHE_VERSION
+        or variant not in PORTRAIT_VARIANTS
+    ):
         raise GenerationError("Portrait mosaic cache has an unsupported format")
     if columns < 16 or rows < 16 or len(glyph_rows) != rows or len(tone_rows) != rows:
         raise GenerationError("Portrait mosaic cache has invalid dimensions")
 
     cells: list[tuple[MosaicCell, ...]] = []
-    allowed_glyphs = set("01/\\<>{}[]#@+- ")
+    allowed_glyphs = set(PORTRAIT_TONE_GLYPHS) | set(PORTRAIT_EDGE_GLYPHS) | {" "}
     for glyph_row, tone_row in zip(glyph_rows, tone_rows, strict=True):
         if not isinstance(glyph_row, str) or len(glyph_row) != columns:
             raise GenerationError("Portrait mosaic cache has an invalid glyph row")
@@ -149,8 +169,6 @@ def load_portrait_mosaic(path: Path) -> PortraitMosaic:
             if tone < 0 or tone > len(TONE_OPACITIES):
                 raise GenerationError("Portrait mosaic cache contains an invalid tone")
             opacity = 0.0 if tone == 0 else TONE_OPACITIES[tone - 1]
-            if variant == "density-only" and tone > 0:
-                opacity = 0.92
             output_row.append(MosaicCell(glyph=glyph, tone=tone, opacity=opacity))
         cells.append(tuple(output_row))
     return PortraitMosaic(columns, rows, tuple(cells), variant)
@@ -200,7 +218,7 @@ def parse_crop_config(raw: object | None) -> CropConfig:
     """Validate a normalized crop or return the face-focused default."""
 
     if raw is None:
-        return CropConfig(x=0.1, y=0.06, width=0.8, height=0.9)
+        return CropConfig(*DEFAULT_CROP_VALUES)
     if not isinstance(raw, dict):
         raise GenerationError("Configuration field 'portrait.crop' must be an object")
 
@@ -306,33 +324,37 @@ def _pixels(image: Image.Image) -> list[int]:
 
 
 def _quantize_tone(signal: float) -> int:
-    if signal < 0.105:
+    """Reduce a normalized tonal signal to a small, readable set of masses."""
+
+    if signal < 0.30:
         return 0
-    return min(8, max(1, math.ceil((signal - 0.105) / 0.895 * 8)))
+    normalized = (signal - 0.30) / 0.70
+    return min(
+        len(TONE_OPACITIES),
+        max(1, math.ceil(normalized * len(TONE_OPACITIES))),
+    )
 
 
-def _glyph_for(tone: int, gx: float, gy: float, row: int, column: int) -> str:
+def _glyph_for(
+    tone: int,
+    gx: float,
+    gy: float,
+    *,
+    edge: float = 0.0,
+    edge_threshold: float | None = None,
+    tone_glyphs: tuple[str, ...] = PORTRAIT_TONE_GLYPHS,
+) -> str:
+    """Choose a coarse tonal glyph or one directional contour glyph."""
+
     if tone <= 0:
         return " "
-    if tone == 1:
-        return "-"
-    if tone == 2:
-        return "+"
-    if tone == 3:
-        if abs(gx) > abs(gy) * 1.25:
-            return ">" if gx > 0 else "<"
-        if abs(gy) > abs(gx) * 1.25:
-            return "0" if gy > 0 else "1"
+    if edge_threshold is not None and edge >= edge_threshold:
+        if abs(gx) > abs(gy) * 1.3:
+            return "|"
+        if abs(gy) > abs(gx) * 1.3:
+            return "-"
         return "/" if gx * gy < 0 else "\\"
-    if tone == 4:
-        return "0" if (row + column) % 2 == 0 else "1"
-    if tone == 5:
-        return "{" if gx >= 0 else "}"
-    if tone == 6:
-        return "[" if gy >= 0 else "]"
-    if tone == 7:
-        return "#"
-    return "@"
+    return tone_glyphs[tone - 1]
 
 
 def portrait_mosaic(
@@ -342,7 +364,7 @@ def portrait_mosaic(
     variant: str = DEFAULT_PORTRAIT_VARIANT,
     columns: int = PORTRAIT_COLUMNS,
 ) -> PortraitMosaic:
-    """Build a cropped, edge-aware character mosaic with eight opacity tones."""
+    """Build a face-focused mosaic from coarse tone and strong contour layers."""
 
     if variant not in PORTRAIT_VARIANTS:
         raise ValueError(f"Unknown portrait variant: {variant}")
@@ -352,24 +374,29 @@ def portrait_mosaic(
     cropped = crop_portrait(image, crop)
     rows = max(16, round(columns * (cropped.height / cropped.width) * 0.54))
 
-    gray = ImageOps.grayscale(cropped)
-    gray = ImageOps.autocontrast(gray, cutoff=(1, 1))
-    gray = gray.point(lambda value: round(255 * ((value / 255) ** 0.92)))
-    gray = gray.filter(ImageFilter.UnsharpMask(radius=1.35, percent=145, threshold=3))
+    gray = ImageOps.grayscale(cropped).filter(ImageFilter.MedianFilter(size=3))
+    gray = ImageOps.autocontrast(gray, cutoff=(2, 2))
+    gray = gray.point(lambda value: round(255 * ((value / 255) ** 0.94)))
 
-    local_mean = gray.filter(
-        ImageFilter.GaussianBlur(radius=max(5, min(gray.size) / 38))
+    # Tone is deliberately blurred before downsampling so skin, hair, beard, and
+    # clothing read as large masses instead of a field of tiny contrast changes.
+    tone_source = gray.filter(ImageFilter.GaussianBlur(radius=1.15))
+    local_mean = tone_source.filter(
+        ImageFilter.GaussianBlur(radius=max(7, min(gray.size) / 30))
     )
-    local_contrast = ImageOps.autocontrast(
-        ImageChops.difference(gray, local_mean), cutoff=(2, 2)
+    local_contrast = ImageChops.difference(tone_source, local_mean).point(
+        lambda value: min(255, round(value * 2.4))
     )
-    edge_source = gray.filter(ImageFilter.GaussianBlur(radius=0.7))
-    edges = ImageOps.autocontrast(
-        edge_source.filter(ImageFilter.FIND_EDGES), cutoff=(2, 2)
+
+    # Keep only meaningful contours. Global edge autocontrast made upholstery,
+    # skin texture, and clothing seams compete with the facial features.
+    edges = tone_source.filter(ImageFilter.GaussianBlur(radius=0.8)).filter(
+        ImageFilter.FIND_EDGES
     )
+    edges = edges.point(lambda value: max(0, min(255, round((value - 10) * 2.2))))
 
     target = (columns, rows)
-    reduced = gray.resize(target, Image.Resampling.LANCZOS)
+    reduced = tone_source.resize(target, Image.Resampling.BOX)
     reduced_edges = edges.resize(target, Image.Resampling.LANCZOS)
     reduced_local = local_contrast.resize(target, Image.Resampling.LANCZOS)
     luminance = _pixels(reduced)
@@ -392,40 +419,86 @@ def portrait_mosaic(
             local = local_values[index] / 255
             gx = lum_at(row, column + 1) - lum_at(row, column - 1)
             gy = lum_at(row + 1, column) - lum_at(row - 1, column)
-            bright_flat_background = light > 0.68 and edge < 0.17 and local < 0.15
+            nx = (column + 0.5) / columns
+            ny = (row + 0.5) / rows
+            head_focus = max(
+                0.0,
+                1.0 - ((nx - 0.52) / 0.64) ** 2 - ((ny - 0.43) / 0.66) ** 2,
+            )
+            shoulder_focus = max(
+                0.0,
+                1.0 - ((nx - 0.52) / 0.82) ** 2 - ((ny - 0.94) / 0.42) ** 2,
+            )
+            focus = max(head_focus, shoulder_focus * 0.72)
+            facial_feature_focus = max(
+                0.0,
+                1.0 - ((nx - 0.43) / 0.36) ** 2 - ((ny - 0.43) / 0.11) ** 2,
+                1.0 - ((nx - 0.46) / 0.15) ** 2 - ((ny - 0.57) / 0.18) ** 2,
+                1.0 - ((nx - 0.45) / 0.25) ** 2 - ((ny - 0.72) / 0.11) ** 2,
+                1.0 - ((nx - 0.46) / 0.34) ** 2 - ((ny - 0.86) / 0.20) ** 2,
+            )
 
-            if variant == "density-only":
-                signal = darkness
-            elif variant == "opacity-based":
-                signal = 0.9 * darkness + 0.1 * local
-            elif variant == "edge-enhanced":
-                signal = 0.34 * darkness + 0.78 * edge + 0.18 * local
-            elif variant == "high-contrast":
-                signal = max(0.0, min(1.0, (darkness - 0.16) * 1.55 + 0.18 * edge))
+            tonal_signal = max(0.0, min(1.0, (darkness - 0.07) / 0.82))
+            tonal_signal = 0.82 * tonal_signal + 0.18 * local
+            edge_signal = edge * (0.58 + 0.42 * focus)
+            contour_signal = max(
+                edge_signal,
+                local * 0.18 * facial_feature_focus,
+            )
+            strict_background = (light > 0.68 and edge < 0.15 and local < 0.14) or (
+                focus < 0.13 and darkness < 0.48
+            )
+
+            edge_threshold: float | None = None
+            if variant == "edge-enhanced":
+                signal = tonal_signal * (0.55 + 0.45 * focus)
+                edge_threshold = 0.055
             elif variant == "background-suppressed":
-                signal = 0 if bright_flat_background else 0.82 * darkness + 0.18 * local
-            else:
-                signal = max(
-                    0.0,
-                    min(
-                        1.0,
-                        (darkness - 0.11) * 1.32 + 0.34 * edge + 0.12 * local,
-                    ),
+                signal = (
+                    0.0 if strict_background else tonal_signal * (0.30 + 0.70 * focus)
                 )
-                if bright_flat_background:
-                    signal = 0
-                elif light > 0.66 and edge < 0.11:
-                    signal *= 0.34
-                if signal < 0.12:
-                    signal = 0
+            elif variant == "combined-tone-edge":
+                signal = (
+                    0.0 if strict_background else tonal_signal * (0.36 + 0.64 * focus)
+                )
+                edge_threshold = 0.055
+            else:
+                # reduced-density, stronger-crop, and simplified-palette isolate
+                # one QA variable while sharing the same restrained tonal base.
+                signal = tonal_signal * (0.52 + 0.48 * focus)
 
             tone = _quantize_tone(max(0.0, min(1.0, signal)))
-            glyph = _glyph_for(tone, gx, gy, row, column)
-            if variant == "opacity-based" and tone > 0:
-                glyph = "#"
+            effective_edge_threshold = (
+                edge_threshold * (1.0 - 0.52 * facial_feature_focus)
+                if edge_threshold is not None
+                else None
+            )
+            edge_is_feature = (
+                effective_edge_threshold is not None
+                and not strict_background
+                and focus >= 0.18
+                and 0 < row < rows - 1
+                and 0 < column < columns - 1
+                and contour_signal >= effective_edge_threshold
+            )
+            if edge_is_feature:
+                tone = max(
+                    tone,
+                    min(len(TONE_OPACITIES), 3 + round(contour_signal * 2)),
+                )
+            glyph = _glyph_for(
+                tone,
+                gx,
+                gy,
+                edge=contour_signal,
+                edge_threshold=effective_edge_threshold if edge_is_feature else None,
+                tone_glyphs=(
+                    SIMPLIFIED_TONE_GLYPHS
+                    if variant == "simplified-palette"
+                    else PORTRAIT_TONE_GLYPHS
+                ),
+            )
             opacity = 0.0 if tone == 0 else TONE_OPACITIES[tone - 1]
-            if variant == "density-only" and tone > 0:
-                opacity = 0.92
             output_row.append(MosaicCell(glyph=glyph, tone=tone, opacity=opacity))
         cells.append(tuple(output_row))
 
@@ -575,16 +648,16 @@ def render_portrait_glyphs(
     theme: Theme,
     *,
     group_id: str,
-    x: float = 55,
-    y: float = 109,
-    row_step: float = 6.55,
+    x: float = 90,
+    y: float = 113,
+    row_step: float = 7.7,
 ) -> str:
     """Render real SVG glyphs with per-cell opacity."""
 
     rows = [
         f'    <g id="{group_id}" fill="{theme.accent}" '
         'font-family="ui-monospace,SFMono-Regular,Consolas,monospace" '
-        'font-size="7.9" letter-spacing="1.02">\n'
+        'font-size="10.2" letter-spacing="0.75">\n'
     ]
     for row_index, row in enumerate(mosaic.cells):
         baseline = y + row_index * row_step
@@ -600,42 +673,64 @@ def render_portrait_glyphs(
     return "".join(rows)
 
 
+def _animation_key_times(*seconds: float) -> str:
+    """Format absolute phase boundaries as normalized SMIL key times."""
+
+    return ";".join(
+        f"{seconds_from_start / ANIMATION_CYCLE_SECONDS:.6f}".rstrip("0").rstrip(".")
+        for seconds_from_start in seconds
+    )
+
+
 def _portrait_animation(theme: Theme, mosaic: PortraitMosaic) -> str:
     top = 104
     height = 280
     bottom = top + height
     group_id = f"portrait-glyphs-{theme.name}"
+    cycle = f"{ANIMATION_CYCLE_SECONDS:g}s"
+    reveal_end = ANIMATION_REVEAL_SECONDS
+    hold_end = reveal_end + ANIMATION_HOLD_SECONDS
+    reset_end = hold_end + ANIMATION_RESET_SECONDS
+    phase_times = _animation_key_times(
+        0, reveal_end, hold_end, reset_end, ANIMATION_CYCLE_SECONDS
+    )
+    scan_times = _animation_key_times(
+        0,
+        reveal_end,
+        min(reveal_end + 0.12, hold_end),
+        reset_end,
+        ANIMATION_CYCLE_SECONDS,
+    )
     return "".join(
         [
             "  <defs>\n",
             render_portrait_glyphs(mosaic, theme, group_id=group_id),
             f'    <clipPath id="portrait-reveal-{theme.name}">\n',
             f'      <rect x="48" y="{top}" width="426" height="{height}">\n',
-            f'        <animate class="smil-motion" attributeName="height" dur="{ANIMATION_CYCLE_SECONDS}s" '
+            f'        <animate class="smil-motion" attributeName="height" dur="{cycle}" '
             'repeatCount="indefinite" calcMode="linear" '
-            f'values="0;0;{height};{height};{height};0;0" '
-            'keyTimes="0;0.04;0.25;0.86;0.88;0.90;1"/>\n',
+            f'values="0;{height};{height};0;0" keyTimes="{phase_times}"/>\n',
             "      </rect>\n",
             "    </clipPath>\n",
             "  </defs>\n",
             '  <g class="portrait-motion-layer">\n',
-            f'    <use href="#{group_id}" opacity="0.075"/>\n',
+            f'    <use href="#{group_id}" opacity="0.035"/>\n',
             f'    <g clip-path="url(#portrait-reveal-{theme.name})"><use href="#{group_id}"/></g>\n',
             f'    <rect class="portrait-scan-line" x="48" y="{top}" width="426" height="2" rx="1" fill="{theme.accent}">\n',
-            f'      <animate class="smil-motion" attributeName="y" dur="{ANIMATION_CYCLE_SECONDS}s" '
-            f'repeatCount="indefinite" values="{top};{top};{bottom};{bottom};{top};{top}" '
-            'keyTimes="0;0.04;0.25;0.86;0.90;1"/>\n',
-            f'      <animate class="smil-motion" attributeName="opacity" dur="{ANIMATION_CYCLE_SECONDS}s" '
-            'repeatCount="indefinite" values="0;0.95;0.95;0;0;0" '
-            'keyTimes="0;0.04;0.25;0.27;0.90;1"/>\n',
+            f'      <animate class="smil-motion" attributeName="y" dur="{cycle}" '
+            f'repeatCount="indefinite" values="{top};{bottom};{bottom};{top};{top}" '
+            f'keyTimes="{phase_times}"/>\n',
+            f'      <animate class="smil-motion" attributeName="opacity" dur="{cycle}" '
+            'repeatCount="indefinite" values="0.95;0.95;0;0;0" '
+            f'keyTimes="{scan_times}"/>\n',
             "    </rect>\n",
             f'    <rect class="portrait-scan-trail" x="48" y="{top - 8}" width="426" height="10" fill="{theme.accent}" opacity="0">\n',
-            f'      <animate class="smil-motion" attributeName="y" dur="{ANIMATION_CYCLE_SECONDS}s" '
-            f'repeatCount="indefinite" values="{top - 8};{top - 8};{bottom - 8};{bottom - 8};{top - 8};{top - 8}" '
-            'keyTimes="0;0.04;0.25;0.86;0.90;1"/>\n',
-            f'      <animate class="smil-motion" attributeName="opacity" dur="{ANIMATION_CYCLE_SECONDS}s" '
-            'repeatCount="indefinite" values="0;0.12;0.12;0;0;0" '
-            'keyTimes="0;0.04;0.25;0.27;0.90;1"/>\n',
+            f'      <animate class="smil-motion" attributeName="y" dur="{cycle}" '
+            f'repeatCount="indefinite" values="{top - 8};{bottom - 8};{bottom - 8};{top - 8};{top - 8}" '
+            f'keyTimes="{phase_times}"/>\n',
+            f'      <animate class="smil-motion" attributeName="opacity" dur="{cycle}" '
+            'repeatCount="indefinite" values="0.12;0.12;0;0;0" '
+            f'keyTimes="{scan_times}"/>\n',
             "    </rect>\n",
             "  </g>\n",
             f'  <use class="portrait-reduced-final reduced-final" href="#{group_id}"/>\n',
@@ -737,6 +832,20 @@ def render_activity(theme: Theme, calendar: dict[str, Any]) -> str:
     grid_width = len(weeks) * (cell + gap) - gap
     grid_x = max(116, (width - grid_width) // 2)
     grid_y = 72
+    cycle = f"{ANIMATION_CYCLE_SECONDS:g}s"
+    reveal_end = ANIMATION_REVEAL_SECONDS
+    hold_end = reveal_end + ANIMATION_HOLD_SECONDS
+    reset_end = hold_end + ANIMATION_RESET_SECONDS
+    phase_times = _animation_key_times(
+        0, reveal_end, hold_end, reset_end, ANIMATION_CYCLE_SECONDS
+    )
+    scan_times = _animation_key_times(
+        0,
+        reveal_end,
+        min(reveal_end + 0.12, hold_end),
+        reset_end,
+        ANIMATION_CYCLE_SECONDS,
+    )
     total = int(
         calendar.get(
             "totalContributions",
@@ -797,10 +906,9 @@ def render_activity(theme: Theme, calendar: dict[str, Any]) -> str:
             "    </g>\n",
             f'    <clipPath id="activity-reveal-{theme.name}">\n',
             f'      <rect x="{grid_x}" y="{grid_y - 2}" width="{grid_width}" height="{7 * (cell + gap)}">\n',
-            f'        <animate class="smil-motion" attributeName="width" dur="{ANIMATION_CYCLE_SECONDS}s" '
+            f'        <animate class="smil-motion" attributeName="width" dur="{cycle}" '
             'repeatCount="indefinite" calcMode="linear" '
-            f'values="0;0;{grid_width};{grid_width};{grid_width};0;0" '
-            'keyTimes="0;0.04;0.25;0.86;0.88;0.90;1"/>\n',
+            f'values="0;{grid_width};{grid_width};0;0" keyTimes="{phase_times}"/>\n',
             "      </rect>\n",
             "    </clipPath>\n",
             "  </defs>\n",
@@ -811,12 +919,12 @@ def render_activity(theme: Theme, calendar: dict[str, Any]) -> str:
             f'    <g id="activity-colored-reveal-layer" clip-path="url(#activity-reveal-{theme.name})">'
             f'<use href="#activity-colored-cells-{theme.name}"/></g>\n',
             f'    <rect class="activity-scan-line" x="{grid_x}" y="{grid_y - 4}" width="2" height="{7 * (cell + gap) + 4}" rx="1" fill="{theme.accent}">\n',
-            f'      <animate class="smil-motion" attributeName="x" dur="{ANIMATION_CYCLE_SECONDS}s" '
-            f'repeatCount="indefinite" values="{grid_x};{grid_x};{grid_x + grid_width};{grid_x + grid_width};{grid_x};{grid_x}" '
-            'keyTimes="0;0.04;0.25;0.86;0.90;1"/>\n',
-            f'      <animate class="smil-motion" attributeName="opacity" dur="{ANIMATION_CYCLE_SECONDS}s" '
-            'repeatCount="indefinite" values="0;0.8;0.8;0;0;0" '
-            'keyTimes="0;0.04;0.25;0.27;0.90;1"/>\n',
+            f'      <animate class="smil-motion" attributeName="x" dur="{cycle}" '
+            f'repeatCount="indefinite" values="{grid_x};{grid_x + grid_width};{grid_x + grid_width};{grid_x};{grid_x}" '
+            f'keyTimes="{phase_times}"/>\n',
+            f'      <animate class="smil-motion" attributeName="opacity" dur="{cycle}" '
+            'repeatCount="indefinite" values="0.8;0.8;0;0;0" '
+            f'keyTimes="{scan_times}"/>\n',
             "    </rect>\n",
             "  </g>\n",
             f'  <use class="activity-reduced-final reduced-final" href="#activity-colored-cells-{theme.name}"/>\n',

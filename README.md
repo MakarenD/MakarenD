@@ -1,14 +1,14 @@
 <picture>
   <source
     media="(prefers-color-scheme: dark)"
-    srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/hero-dark.svg?v=2"
+    srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/hero-dark.svg?v=3"
   />
   <source
     media="(prefers-color-scheme: light)"
-    srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/hero-light.svg?v=2"
+    srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/hero-light.svg?v=3"
   />
   <img
-    src="https://raw.githubusercontent.com/MakarenD/MakarenD/output/hero-light.svg?v=2"
+    src="https://raw.githubusercontent.com/MakarenD/MakarenD/output/hero-light.svg?v=3"
     alt="Makaren system profile with an ASCII portrait"
     width="100%"
   />
@@ -28,14 +28,14 @@ platform   Docker · Linux · macOS · Windows · Git
 <picture>
   <source
     media="(prefers-color-scheme: dark)"
-    srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/activity-dark.svg?v=2"
+    srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/activity-dark.svg?v=3"
   />
   <source
     media="(prefers-color-scheme: light)"
-    srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/activity-light.svg?v=2"
+    srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/activity-light.svg?v=3"
   />
   <img
-    src="https://raw.githubusercontent.com/MakarenD/MakarenD/output/activity-light.svg?v=2"
+    src="https://raw.githubusercontent.com/MakarenD/MakarenD/output/activity-light.svg?v=3"
     alt="MakarenD GitHub contribution activity for the past year"
     width="100%"
   />

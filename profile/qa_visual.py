@@ -13,10 +13,38 @@ from pathlib import Path
 from PIL import Image, ImageChops
 from playwright.sync_api import Page, sync_playwright
 
+from generate import (
+    ANIMATION_CYCLE_SECONDS,
+    ANIMATION_HOLD_SECONDS,
+    ANIMATION_RESET_SECONDS,
+    ANIMATION_REVEAL_SECONDS,
+)
+
 
 DEFAULT_ASSETS = Path(__file__).resolve().parent.parent / "dist"
 DEFAULT_OUTPUT = Path(__file__).resolve().parent.parent / "qa-artifacts" / "timeline"
-TIMESTAMPS_MS = (0, 500, 1100, 1200, 1740, 2400, 3000, 8000, 12000, 12600)
+REVEAL_MID_MS = round(ANIMATION_REVEAL_SECONDS * 500)
+FULLY_VISIBLE_MS = round((ANIMATION_REVEAL_SECONDS + 0.3) * 1000)
+HOLD_MS = round((ANIMATION_REVEAL_SECONDS + 1.2) * 1000)
+RESET_START_MS = round((ANIMATION_REVEAL_SECONDS + ANIMATION_HOLD_SECONDS) * 1000)
+RESET_END_MS = round(
+    (ANIMATION_REVEAL_SECONDS + ANIMATION_HOLD_SECONDS + ANIMATION_RESET_SECONDS) * 1000
+)
+CYCLE_MS = round(ANIMATION_CYCLE_SECONDS * 1000)
+NEXT_REVEAL_MS = CYCLE_MS + 350
+NEXT_REVEAL_MID_MS = CYCLE_MS + REVEAL_MID_MS
+STATIC_WAIT_MS = CYCLE_MS + 600
+TIMESTAMPS_MS = (
+    0,
+    REVEAL_MID_MS,
+    FULLY_VISIBLE_MS,
+    HOLD_MS,
+    RESET_START_MS,
+    RESET_END_MS,
+    CYCLE_MS,
+    NEXT_REVEAL_MS,
+    NEXT_REVEAL_MID_MS,
+)
 
 
 @dataclass(frozen=True)
@@ -100,6 +128,17 @@ def assert_changed(
     return ratio
 
 
+def assert_unchanged(
+    frames: dict[int, Capture], first: int, second: int, label: str
+) -> float:
+    ratio = changed_pixel_ratio(frames[first].path, frames[second].path)
+    if ratio > 0.0002:
+        raise AssertionError(
+            f"{label} hold frames at {first}ms and {second}ms changed ({ratio:.6f})"
+        )
+    return ratio
+
+
 def capture_normal_timeline(
     page: Page, page_url: str, output: Path, theme: str, width: int
 ) -> dict[str, object]:
@@ -128,24 +167,27 @@ def capture_normal_timeline(
         if len(corners) != 1:
             raise AssertionError(f"Background flash detected: {sorted(corners)}")
 
-    diffs = {
-        "hero_0_to_500": assert_changed(frames["hero"], 0, 500, "hero"),
-        "hero_500_to_1200": assert_changed(frames["hero"], 500, 1200, "hero"),
-        "hero_1200_to_2400": assert_changed(frames["hero"], 1200, 2400, "hero"),
-        "hero_hold_to_cycle_2": assert_changed(frames["hero"], 8000, 12000, "hero"),
-        "activity_500_to_1100": assert_changed(
-            frames["activity"], 500, 1100, "activity"
-        ),
-        "activity_1100_to_1740": assert_changed(
-            frames["activity"], 1100, 1740, "activity"
-        ),
-        "activity_1740_to_3000": assert_changed(
-            frames["activity"], 1740, 3000, "activity"
-        ),
-        "activity_hold_to_cycle_2": assert_changed(
-            frames["activity"], 8000, 12000, "activity"
-        ),
-    }
+    diffs: dict[str, float] = {}
+    for asset in ("hero", "activity"):
+        asset_frames = frames[asset]
+        diffs[f"{asset}_start_to_mid_reveal"] = assert_changed(
+            asset_frames, 0, REVEAL_MID_MS, asset
+        )
+        diffs[f"{asset}_mid_reveal_to_full"] = assert_changed(
+            asset_frames, REVEAL_MID_MS, FULLY_VISIBLE_MS, asset
+        )
+        diffs[f"{asset}_fully_visible_hold"] = assert_unchanged(
+            asset_frames, FULLY_VISIBLE_MS, HOLD_MS, asset
+        )
+        diffs[f"{asset}_hold_to_reset"] = assert_changed(
+            asset_frames, HOLD_MS, RESET_END_MS, asset
+        )
+        diffs[f"{asset}_next_cycle_begins"] = assert_changed(
+            asset_frames, CYCLE_MS, NEXT_REVEAL_MS, asset
+        )
+        diffs[f"{asset}_next_reveal_progresses"] = assert_changed(
+            asset_frames, NEXT_REVEAL_MS, NEXT_REVEAL_MID_MS, asset
+        )
     return {
         "diff_ratios": diffs,
         "sizes": {
@@ -186,7 +228,7 @@ def capture_reduced_motion(
         )
         first = output / f"{theme}-{width}-{asset}-reduced-00000ms.png"
         first_capture = capture_element(page, "svg", first)
-        hold = output / f"{theme}-{width}-{asset}-08000ms.png"
+        hold = output / f"{theme}-{width}-{asset}-{HOLD_MS:05d}ms.png"
         final_ratio = changed_pixel_ratio(first, hold)
         final_threshold = 0.15 if width == 360 else 0.01
         if final_ratio > final_threshold:
@@ -195,9 +237,11 @@ def capture_reduced_motion(
             )
         frames = [first.name]
         static_ratio: float | None = None
-        if theme == "dark" and width == 1000:
-            second = output / f"{theme}-{width}-{asset}-reduced-03000ms.png"
-            page.wait_for_timeout(3000)
+        if width == 1000:
+            second = output / (
+                f"{theme}-{width}-{asset}-reduced-{STATIC_WAIT_MS:05d}ms.png"
+            )
+            page.wait_for_timeout(STATIC_WAIT_MS)
             capture_element(page, "svg", second)
             static_ratio = changed_pixel_ratio(first, second)
             if static_ratio > 0.0001:

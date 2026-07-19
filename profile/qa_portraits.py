@@ -5,14 +5,17 @@ from __future__ import annotations
 
 import argparse
 import json
+from dataclasses import dataclass
 from pathlib import Path
 
 from PIL import ImageOps
 
 from generate import (
     LOCAL_AVATAR,
+    PORTRAIT_COLUMNS,
     PORTRAIT_VARIANTS,
     THEMES,
+    CropConfig,
     PortraitMosaic,
     crop_portrait,
     load_avatar,
@@ -24,6 +27,32 @@ from generate import (
 
 
 DEFAULT_OUTPUT = Path(__file__).resolve().parent.parent / "qa-artifacts" / "portraits"
+WIDE_COMPARISON_CROP = CropConfig(x=0.1, y=0.06, width=0.8, height=0.9)
+
+
+@dataclass(frozen=True)
+class PortraitPreset:
+    """One intentionally distinct local portrait comparison."""
+
+    name: str
+    crop: CropConfig
+    columns: int
+
+
+def portrait_presets(selected_crop: CropConfig) -> tuple[PortraitPreset, ...]:
+    """Cover density, crop, edges, background, palette, and compositing."""
+
+    presets = (
+        PortraitPreset("reduced-density", WIDE_COMPARISON_CROP, 42),
+        PortraitPreset("stronger-crop", selected_crop, 52),
+        PortraitPreset("edge-enhanced", WIDE_COMPARISON_CROP, 52),
+        PortraitPreset("background-suppressed", WIDE_COMPARISON_CROP, 52),
+        PortraitPreset("simplified-palette", WIDE_COMPARISON_CROP, 52),
+        PortraitPreset("combined-tone-edge", selected_crop, PORTRAIT_COLUMNS),
+    )
+    if tuple(preset.name for preset in presets) != PORTRAIT_VARIANTS:
+        raise RuntimeError("Portrait QA presets must cover every pipeline variant")
+    return presets
 
 
 def preview_svg(variant: str, mosaic: PortraitMosaic) -> str:
@@ -71,19 +100,30 @@ def build_contact_sheet(config_path: Path, avatar_path: Path, output_dir: Path) 
         },
         "variants": {},
     }
-    for variant in PORTRAIT_VARIANTS:
-        mosaic = portrait_mosaic(avatar, crop, variant=variant)
-        svg = preview_svg(variant, mosaic)
-        svg_path = output_dir / f"{variant}.svg"
+    for preset in portrait_presets(crop):
+        mosaic = portrait_mosaic(
+            avatar,
+            preset.crop,
+            variant=preset.name,
+            columns=preset.columns,
+        )
+        svg = preview_svg(preset.name, mosaic)
+        svg_path = output_dir / f"{preset.name}.svg"
         svg_path.write_text(svg, encoding="utf-8")
         cards.append(
-            f'<article class="card"><h2>{xml_escape(variant)}</h2><img src="{svg_path.name}" alt="{xml_escape(variant)} portrait variant"></article>'
+            f'<article class="card"><h2>{xml_escape(preset.name)}</h2><img src="{svg_path.name}" alt="{xml_escape(preset.name)} portrait variant"></article>'
         )
-        summary["variants"][variant] = {
+        summary["variants"][preset.name] = {
             "columns": mosaic.columns,
             "rows": mosaic.rows,
             "visible_cells": mosaic.visible_cells,
             "tone_levels": sorted(mosaic.tone_levels),
+            "crop": {
+                "x": preset.crop.x,
+                "y": preset.crop.y,
+                "width": preset.crop.width,
+                "height": preset.crop.height,
+            },
         }
 
     html = """<!doctype html>
