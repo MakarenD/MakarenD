@@ -13,6 +13,7 @@ from PIL import ImageOps
 from generate import (
     LOCAL_AVATAR,
     PORTRAIT_COLUMNS,
+    PORTRAIT_GLYPH_ADVANCE,
     PORTRAIT_VARIANTS,
     THEMES,
     CropConfig,
@@ -27,7 +28,6 @@ from generate import (
 
 
 DEFAULT_OUTPUT = Path(__file__).resolve().parent.parent / "qa-artifacts" / "portraits"
-WIDE_COMPARISON_CROP = CropConfig(x=0.1, y=0.06, width=0.8, height=0.9)
 
 
 @dataclass(frozen=True)
@@ -40,15 +40,15 @@ class PortraitPreset:
 
 
 def portrait_presets(selected_crop: CropConfig) -> tuple[PortraitPreset, ...]:
-    """Cover density, crop, edges, background, palette, and compositing."""
+    """Cover six genuinely different portrait-first rendering strategies."""
 
     presets = (
-        PortraitPreset("reduced-density", WIDE_COMPARISON_CROP, 42),
-        PortraitPreset("stronger-crop", selected_crop, 52),
-        PortraitPreset("edge-enhanced", WIDE_COMPARISON_CROP, 52),
-        PortraitPreset("background-suppressed", WIDE_COMPARISON_CROP, 52),
-        PortraitPreset("simplified-palette", WIDE_COMPARISON_CROP, 52),
-        PortraitPreset("combined-tone-edge", selected_crop, PORTRAIT_COLUMNS),
+        PortraitPreset("silhouette-first", selected_crop, 32),
+        PortraitPreset("edge-first", selected_crop, 36),
+        PortraitPreset("sparse-tonal", selected_crop, 34),
+        PortraitPreset("sparse-tonal-contour", selected_crop, 36),
+        PortraitPreset("foreground-masked", selected_crop, 36),
+        PortraitPreset("gesture-emphasized", selected_crop, PORTRAIT_COLUMNS),
     )
     if tuple(preset.name for preset in presets) != PORTRAIT_VARIANTS:
         raise RuntimeError("Portrait QA presets must cover every pipeline variant")
@@ -60,7 +60,10 @@ def preview_svg(variant: str, mosaic: PortraitMosaic) -> str:
 
     theme = THEMES["dark"]
     group_id = f"preview-{variant}"
-    glyphs = render_portrait_glyphs(mosaic, theme, group_id=group_id, x=20, y=38)
+    centered_x = (452 - mosaic.columns * PORTRAIT_GLYPH_ADVANCE) / 2
+    glyphs = render_portrait_glyphs(
+        mosaic, theme, group_id=group_id, x=centered_x, y=40
+    )
     return "".join(
         [
             '<svg xmlns="http://www.w3.org/2000/svg" width="452" height="318" viewBox="0 0 452 318">\n',

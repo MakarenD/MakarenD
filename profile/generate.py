@@ -25,21 +25,32 @@ DEFAULT_OUTPUT = PROFILE_DIR.parent / "dist"
 LOCAL_AVATAR = PROFILE_DIR / "avatar-source.png"
 GRAPHQL_URL = "https://api.github.com/graphql"
 PORTRAIT_VARIANTS = (
-    "reduced-density",
-    "stronger-crop",
-    "edge-enhanced",
-    "background-suppressed",
-    "simplified-palette",
-    "combined-tone-edge",
+    "silhouette-first",
+    "edge-first",
+    "sparse-tonal",
+    "sparse-tonal-contour",
+    "foreground-masked",
+    "gesture-emphasized",
 )
-DEFAULT_PORTRAIT_VARIANT = "combined-tone-edge"
-PORTRAIT_COLUMNS = 48
-PORTRAIT_CACHE_VERSION = 2
-PORTRAIT_TONE_GLYPHS = (".", ":", "+", "#", "@")
-SIMPLIFIED_TONE_GLYPHS = (".", ".", "+", "#", "#")
-PORTRAIT_EDGE_GLYPHS = frozenset("-|/\\")
-TONE_OPACITIES = (0.38, 0.55, 0.70, 0.86, 1.0)
-DEFAULT_CROP_VALUES = (0.28, 0.02, 0.64, 0.86)
+DEFAULT_PORTRAIT_VARIANT = "gesture-emphasized"
+PORTRAIT_COLUMNS = 34
+PORTRAIT_CACHE_VERSION = 3
+PORTRAIT_TONE_GLYPHS = (".", "+", "#", "#")
+PORTRAIT_EDGE_GLYPHS = frozenset("-|/\\()")
+PORTRAIT_DETAIL_GLYPHS = frozenset("@=")
+PORTRAIT_ALLOWED_GLYPHS = frozenset(
+    {" ", *PORTRAIT_TONE_GLYPHS, *PORTRAIT_EDGE_GLYPHS, *PORTRAIT_DETAIL_GLYPHS}
+)
+TONE_OPACITIES = (0.34, 0.58, 0.82, 1.0)
+DEFAULT_CROP_VALUES = (0.08, 0.0, 0.84, 0.96)
+PORTRAIT_FONT_SIZE = 14.5
+PORTRAIT_LETTER_SPACING = 0.55
+PORTRAIT_ROW_STEP = 9.1
+PORTRAIT_GLYPH_ADVANCE = 9.3
+PORTRAIT_MIN_COLUMNS = 16
+PORTRAIT_MAX_COLUMNS = 48
+PORTRAIT_MIN_ROWS = 16
+PORTRAIT_MAX_ROWS = 30
 
 ANIMATION_REVEAL_SECONDS = 1.8
 ANIMATION_HOLD_SECONDS = 3.0
@@ -113,6 +124,34 @@ class PortraitMosaic:
         return {cell.tone for row in self.cells for cell in row if cell.tone > 0}
 
 
+@dataclass(frozen=True)
+class PortraitStyle:
+    """Controls one portrait-first comparison without changing its composition."""
+
+    tone_threshold: float
+    edge_threshold: float
+    sparsity: float
+    use_tone: bool
+    use_image_edges: bool
+    use_semantic_contours: bool
+    foreground_cutoff: float
+    emphasize_gesture: bool = False
+
+
+PORTRAIT_STYLES = {
+    "silhouette-first": PortraitStyle(0.33, 0.16, 0.20, True, False, True, 0.12),
+    "edge-first": PortraitStyle(1.0, 0.075, 0.0, False, True, True, 0.12),
+    "sparse-tonal": PortraitStyle(0.48, 1.0, 0.55, True, False, False, 0.15),
+    "sparse-tonal-contour": PortraitStyle(
+        0.46, 0.10, 0.48, True, True, True, 0.15
+    ),
+    "foreground-masked": PortraitStyle(0.44, 0.11, 0.42, True, False, True, 0.25),
+    "gesture-emphasized": PortraitStyle(
+        0.46, 0.11, 0.74, True, False, False, 0.22, True
+    ),
+}
+
+
 def save_portrait_mosaic(mosaic: PortraitMosaic, path: Path) -> None:
     """Persist the derived glyph grid without storing the source photograph."""
 
@@ -133,8 +172,8 @@ def load_portrait_mosaic(path: Path) -> PortraitMosaic:
 
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
-        columns = int(payload["columns"])
-        rows = int(payload["rows"])
+        columns = payload["columns"]
+        rows = payload["rows"]
         variant = str(payload["variant"])
         glyph_rows = payload["glyph_rows"]
         tone_rows = payload["tone_rows"]
@@ -146,11 +185,17 @@ def load_portrait_mosaic(path: Path) -> PortraitMosaic:
         or variant not in PORTRAIT_VARIANTS
     ):
         raise GenerationError("Portrait mosaic cache has an unsupported format")
-    if columns < 16 or rows < 16 or len(glyph_rows) != rows or len(tone_rows) != rows:
+    if (
+        type(columns) is not int
+        or type(rows) is not int
+        or not PORTRAIT_MIN_COLUMNS <= columns <= PORTRAIT_MAX_COLUMNS
+        or not PORTRAIT_MIN_ROWS <= rows <= PORTRAIT_MAX_ROWS
+        or len(glyph_rows) != rows
+        or len(tone_rows) != rows
+    ):
         raise GenerationError("Portrait mosaic cache has invalid dimensions")
 
     cells: list[tuple[MosaicCell, ...]] = []
-    allowed_glyphs = set(PORTRAIT_TONE_GLYPHS) | set(PORTRAIT_EDGE_GLYPHS) | {" "}
     for glyph_row, tone_row in zip(glyph_rows, tone_rows, strict=True):
         if not isinstance(glyph_row, str) or len(glyph_row) != columns:
             raise GenerationError("Portrait mosaic cache has an invalid glyph row")
@@ -158,16 +203,15 @@ def load_portrait_mosaic(path: Path) -> PortraitMosaic:
             raise GenerationError("Portrait mosaic cache has an invalid tone row")
         output_row: list[MosaicCell] = []
         for glyph, raw_tone in zip(glyph_row, tone_row, strict=True):
-            if glyph not in allowed_glyphs or isinstance(raw_tone, bool):
+            if glyph not in PORTRAIT_ALLOWED_GLYPHS or type(raw_tone) is not int:
                 raise GenerationError("Portrait mosaic cache contains an invalid cell")
-            try:
-                tone = int(raw_tone)
-            except (TypeError, ValueError) as exc:
-                raise GenerationError(
-                    "Portrait mosaic cache contains an invalid tone"
-                ) from exc
+            tone = raw_tone
             if tone < 0 or tone > len(TONE_OPACITIES):
                 raise GenerationError("Portrait mosaic cache contains an invalid tone")
+            if (glyph == " ") != (tone == 0):
+                raise GenerationError(
+                    "Portrait mosaic cache contains an inconsistent cell"
+                )
             opacity = 0.0 if tone == 0 else TONE_OPACITIES[tone - 1]
             output_row.append(MosaicCell(glyph=glyph, tone=tone, opacity=opacity))
         cells.append(tuple(output_row))
@@ -323,12 +367,12 @@ def _pixels(image: Image.Image) -> list[int]:
     return [int(value) for value in getter()]
 
 
-def _quantize_tone(signal: float) -> int:
+def _quantize_tone(signal: float, threshold: float = 0.30) -> int:
     """Reduce a normalized tonal signal to a small, readable set of masses."""
 
-    if signal < 0.30:
+    if signal < threshold:
         return 0
-    normalized = (signal - 0.30) / 0.70
+    normalized = (signal - threshold) / max(0.01, 1.0 - threshold)
     return min(
         len(TONE_OPACITIES),
         max(1, math.ceil(normalized * len(TONE_OPACITIES))),
@@ -357,6 +401,285 @@ def _glyph_for(
     return tone_glyphs[tone - 1]
 
 
+def _ellipse_score(
+    x: float,
+    y: float,
+    center_x: float,
+    center_y: float,
+    radius_x: float,
+    radius_y: float,
+) -> float:
+    distance = ((x - center_x) / radius_x) ** 2 + ((y - center_y) / radius_y) ** 2
+    return max(0.0, 1.0 - distance)
+
+
+def _segment_distance(
+    x: float,
+    y: float,
+    start_x: float,
+    start_y: float,
+    end_x: float,
+    end_y: float,
+) -> float:
+    dx = end_x - start_x
+    dy = end_y - start_y
+    length_squared = dx * dx + dy * dy
+    if length_squared == 0:
+        return math.hypot(x - start_x, y - start_y)
+    position = max(
+        0.0,
+        min(1.0, ((x - start_x) * dx + (y - start_y) * dy) / length_squared),
+    )
+    return math.hypot(x - (start_x + position * dx), y - (start_y + position * dy))
+
+
+def _capsule_score(
+    x: float,
+    y: float,
+    start_x: float,
+    start_y: float,
+    end_x: float,
+    end_y: float,
+    radius: float,
+) -> float:
+    return max(
+        0.0,
+        1.0 - _segment_distance(x, y, start_x, start_y, end_x, end_y) / radius,
+    )
+
+
+def _portrait_regions(x: float, y: float) -> dict[str, float]:
+    """Return semantic masses for the fixed source composition.
+
+    The hand-over-eye gesture is the identity of this photograph. Geometry keeps
+    that gesture, hair, beard, and hoodie legible while the photograph supplies
+    only texture inside those regions.
+    """
+
+    head = _ellipse_score(x, y, 0.57, 0.50, 0.33, 0.46)
+    hair = _ellipse_score(x, y, 0.60, 0.16, 0.25, 0.14) if y < 0.29 else 0.0
+    beard = (
+        _ellipse_score(x, y, 0.58, 0.74, 0.24, 0.20) if y > 0.56 else 0.0
+    )
+    hoodie = max(
+        _ellipse_score(x, y, 0.51, 1.05, 0.60, 0.30),
+        _capsule_score(x, y, 0.18, 0.98, 0.32, 0.74, 0.10),
+        _capsule_score(x, y, 0.93, 0.98, 0.80, 0.70, 0.11),
+    )
+
+    palm = max(
+        _ellipse_score(x, y, 0.16, 0.55, 0.27, 0.44),
+        _capsule_score(x, y, -0.03, 0.98, 0.19, 0.57, 0.18),
+    )
+    fingers = max(
+        _capsule_score(x, y, 0.03, 0.37, 0.03, 0.04, 0.052),
+        _capsule_score(x, y, 0.14, 0.38, 0.20, 0.00, 0.057),
+        _capsule_score(x, y, 0.26, 0.36, 0.38, 0.02, 0.054),
+    )
+    ring_distance = math.sqrt(((x - 0.41) / 0.16) ** 2 + ((y - 0.45) / 0.105) ** 2)
+    ring = max(0.0, 1.0 - abs(ring_distance - 1.0) / 0.30)
+    pinch = _capsule_score(x, y, 0.50, 0.38, 0.59, 0.49, 0.046)
+    hand = max(palm, fingers, ring, pinch)
+    foreground = max(head, hair, beard, hoodie, hand)
+    return {
+        "head": head,
+        "hair": hair,
+        "beard": beard,
+        "hoodie": hoodie,
+        "hand": hand,
+        "foreground": foreground,
+        "ring_distance": ring_distance,
+    }
+
+
+def _semantic_gradient(
+    x: float, y: float, column_step: float, row_step: float
+) -> tuple[float, float, float]:
+    """Return a one-cell outline of each semantic mass.
+
+    Comparing mask membership instead of the masks' continuous gradients avoids
+    filling every interior cell with a contour glyph.
+    """
+
+    left = _portrait_regions(x - column_step, y)
+    right = _portrait_regions(x + column_step, y)
+    up = _portrait_regions(x, y - row_step)
+    down = _portrait_regions(x, y + row_step)
+    thresholds = {
+        "head": 0.12,
+        "hair": 0.08,
+        "beard": 0.08,
+        "hoodie": 0.10,
+        "hand": 0.14,
+    }
+    gradients = [
+        (
+            float(right[key] >= threshold) - float(left[key] >= threshold),
+            float(down[key] >= threshold) - float(up[key] >= threshold),
+        )
+        for key, threshold in thresholds.items()
+    ]
+    horizontal, vertical = max(
+        gradients, key=lambda gradient: abs(gradient[0]) + abs(gradient[1])
+    )
+    boundary = min(1.0, abs(horizontal) + abs(vertical))
+    return (
+        horizontal,
+        vertical,
+        boundary,
+    )
+
+
+def _ellipse_glyph(
+    x: float,
+    y: float,
+    center_x: float,
+    center_y: float,
+    radius_x: float,
+    radius_y: float,
+) -> str:
+    horizontal = (x - center_x) / radius_x
+    vertical = (y - center_y) / radius_y
+    if abs(horizontal) > abs(vertical) * 1.15:
+        return "(" if horizontal < 0 else ")"
+    if abs(vertical) > abs(horizontal) * 1.25:
+        return "-"
+    return "/" if horizontal * vertical < 0 else "\\"
+
+
+def _line_glyph(start_x: float, start_y: float, end_x: float, end_y: float) -> str:
+    dx = end_x - start_x
+    dy = end_y - start_y
+    if abs(dx) <= abs(dy) * 0.35:
+        return "|"
+    if abs(dy) <= abs(dx) * 0.35:
+        return "-"
+    return "\\" if dx * dy > 0 else "/"
+
+
+def _gesture_feature(
+    x: float, y: float, columns: int, rows: int
+) -> tuple[str, int] | None:
+    """Overlay a few deliberate glyphs after the sparse image-derived layers."""
+
+    column = min(columns - 1, int(x * columns))
+    row = min(rows - 1, int(y * rows))
+    ring_column = round(columns * 0.41)
+    ring_row = round(rows * 0.45)
+    dc = column - ring_column
+    dr = row - ring_row
+
+    # A discrete ring is more legible than a sampled mathematical ellipse at
+    # README size. Its clean hole and single pupil carry the whole gesture.
+    if abs(dr) == 3 and abs(dc) <= 3:
+        return "-", 4
+    if dr == -2 and dc in (-4, 4):
+        return ("/" if dc < 0 else "\\"), 4
+    if abs(dr) <= 1 and dc in (-5, 5):
+        return ("(" if dc < 0 else ")"), 4
+    if dr == 2 and dc in (-4, 4):
+        return ("\\" if dc < 0 else "/"), 4
+    if dr == 0 and abs(dc) <= 1:
+        return ("@", 4) if dc == 0 else ("-", 4)
+    if abs(dr) <= 4 and abs(dc) <= 6:
+        return " ", 0
+
+    feature_width = 0.52 / max(columns, rows)
+
+    # Three separate center lines read more clearly as raised fingers than six
+    # parallel capsule edges at this small size.
+    fingers = (
+        (0.04, 0.38, 0.06, 0.05, 0.041),
+        (0.15, 0.39, 0.20, 0.03, 0.044),
+        (0.27, 0.37, 0.37, 0.05, 0.043),
+    )
+    for start_x, start_y, end_x, end_y, radius in fingers:
+        if abs(y - end_y) <= feature_width and abs(x - end_x) <= radius * 0.55:
+            return "-", 4
+        if (
+            _segment_distance(x, y, start_x, start_y, end_x, end_y)
+            <= feature_width
+        ):
+            return _line_glyph(start_x, start_y, end_x, end_y), 4
+
+    palm_outline = (
+        (-0.02, 0.24, 0.04, 0.36),
+        (0.04, 0.36, 0.24, 0.47),
+        (-0.01, 0.98, 0.17, 0.90),
+        (0.17, 0.90, 0.30, 0.69),
+        (0.30, 0.69, 0.29, 0.57),
+    )
+    for start_x, start_y, end_x, end_y in palm_outline:
+        if (
+            _segment_distance(x, y, start_x, start_y, end_x, end_y)
+            <= feature_width
+        ):
+            return _line_glyph(start_x, start_y, end_x, end_y), 4
+
+    hand_connections = (
+        (0.25, 0.39, 0.24, 0.45),
+        (0.24, 0.50, 0.30, 0.61),
+        (0.58, 0.41, 0.65, 0.49),
+    )
+    for start_x, start_y, end_x, end_y in hand_connections:
+        if (
+            _segment_distance(x, y, start_x, start_y, end_x, end_y)
+            <= feature_width
+        ):
+            return _line_glyph(start_x, start_y, end_x, end_y), 4
+
+    face_width = 0.72 / max(columns, rows)
+    if _segment_distance(x, y, 0.54, 0.49, 0.57, 0.60) <= face_width:
+        return "|", 3
+    if min(
+        _segment_distance(x, y, 0.46, 0.65, 0.56, 0.63),
+        _segment_distance(x, y, 0.56, 0.63, 0.68, 0.66),
+    ) <= face_width:
+        return "=", 4
+    if _segment_distance(x, y, 0.49, 0.71, 0.66, 0.71) <= face_width:
+        return "-", 4
+
+    head_distance = math.sqrt(((x - 0.57) / 0.33) ** 2 + ((y - 0.50) / 0.46) ** 2)
+    if abs(head_distance - 1.0) <= 0.055 and (x > 0.45 or y < 0.28):
+        return _ellipse_glyph(x, y, 0.57, 0.50, 0.33, 0.46), 3
+
+    hairline = (
+        (0.28, 0.24, 0.45, 0.18),
+        (0.45, 0.18, 0.67, 0.20),
+        (0.67, 0.20, 0.78, 0.29),
+    )
+    for start_x, start_y, end_x, end_y in hairline:
+        if (
+            _segment_distance(x, y, start_x, start_y, end_x, end_y)
+            <= feature_width
+        ):
+            return _line_glyph(start_x, start_y, end_x, end_y), 3
+
+    beard_distance = math.sqrt(((x - 0.58) / 0.24) ** 2 + ((y - 0.74) / 0.20) ** 2)
+    if y > 0.58 and abs(beard_distance - 1.0) <= 0.07:
+        return _ellipse_glyph(x, y, 0.58, 0.74, 0.24, 0.20), 3
+
+    hoodie_lines = (
+        (0.01, 0.99, 0.25, 0.76),
+        (0.25, 0.76, 0.49, 0.97),
+        (0.99, 0.99, 0.80, 0.73),
+        (0.80, 0.73, 0.58, 0.97),
+    )
+    for start_x, start_y, end_x, end_y in hoodie_lines:
+        if (
+            _segment_distance(x, y, start_x, start_y, end_x, end_y)
+            <= feature_width
+        ):
+            return _line_glyph(start_x, start_y, end_x, end_y), 3
+    for drawstring_x in (0.50, 0.69):
+        if (
+            abs(x - drawstring_x) <= feature_width
+            and 0.89 <= y <= 0.99
+        ):
+            return "|", 3
+    return None
+
+
 def portrait_mosaic(
     image: Image.Image,
     crop: CropConfig,
@@ -364,36 +687,44 @@ def portrait_mosaic(
     variant: str = DEFAULT_PORTRAIT_VARIANT,
     columns: int = PORTRAIT_COLUMNS,
 ) -> PortraitMosaic:
-    """Build a face-focused mosaic from coarse tone and strong contour layers."""
+    """Build a sparse semantic portrait centered on the hand-over-eye gesture."""
 
     if variant not in PORTRAIT_VARIANTS:
         raise ValueError(f"Unknown portrait variant: {variant}")
-    if columns < 16:
-        raise ValueError("Portrait must use at least sixteen columns")
+    if not PORTRAIT_MIN_COLUMNS <= columns <= PORTRAIT_MAX_COLUMNS:
+        raise ValueError(
+            f"Portrait columns must be between {PORTRAIT_MIN_COLUMNS} "
+            f"and {PORTRAIT_MAX_COLUMNS}"
+        )
 
     cropped = crop_portrait(image, crop)
-    rows = max(16, round(columns * (cropped.height / cropped.width) * 0.54))
+    rows = max(24, round(columns * 0.82))
+    if rows > PORTRAIT_MAX_ROWS:
+        raise ValueError(
+            f"Portrait grid would exceed the {PORTRAIT_MAX_ROWS}-row hero panel"
+        )
+    style = PORTRAIT_STYLES[variant]
 
-    gray = ImageOps.grayscale(cropped).filter(ImageFilter.MedianFilter(size=3))
+    gray = ImageOps.grayscale(cropped).filter(ImageFilter.MedianFilter(size=5))
     gray = ImageOps.autocontrast(gray, cutoff=(2, 2))
-    gray = gray.point(lambda value: round(255 * ((value / 255) ** 0.94)))
+    gray = gray.point(lambda value: round(255 * ((value / 255) ** 0.96)))
 
     # Tone is deliberately blurred before downsampling so skin, hair, beard, and
     # clothing read as large masses instead of a field of tiny contrast changes.
-    tone_source = gray.filter(ImageFilter.GaussianBlur(radius=1.15))
+    tone_source = gray.filter(ImageFilter.GaussianBlur(radius=2.0))
     local_mean = tone_source.filter(
         ImageFilter.GaussianBlur(radius=max(7, min(gray.size) / 30))
     )
     local_contrast = ImageChops.difference(tone_source, local_mean).point(
-        lambda value: min(255, round(value * 2.4))
+        lambda value: min(255, round(value * 1.8))
     )
 
     # Keep only meaningful contours. Global edge autocontrast made upholstery,
     # skin texture, and clothing seams compete with the facial features.
-    edges = tone_source.filter(ImageFilter.GaussianBlur(radius=0.8)).filter(
+    edges = tone_source.filter(ImageFilter.GaussianBlur(radius=1.1)).filter(
         ImageFilter.FIND_EDGES
     )
-    edges = edges.point(lambda value: max(0, min(255, round((value - 10) * 2.2))))
+    edges = edges.point(lambda value: max(0, min(255, round((value - 16) * 1.8))))
 
     target = (columns, rows)
     reduced = tone_source.resize(target, Image.Resampling.BOX)
@@ -421,83 +752,73 @@ def portrait_mosaic(
             gy = lum_at(row + 1, column) - lum_at(row - 1, column)
             nx = (column + 0.5) / columns
             ny = (row + 0.5) / rows
-            head_focus = max(
-                0.0,
-                1.0 - ((nx - 0.52) / 0.64) ** 2 - ((ny - 0.43) / 0.66) ** 2,
-            )
-            shoulder_focus = max(
-                0.0,
-                1.0 - ((nx - 0.52) / 0.82) ** 2 - ((ny - 0.94) / 0.42) ** 2,
-            )
-            focus = max(head_focus, shoulder_focus * 0.72)
-            facial_feature_focus = max(
-                0.0,
-                1.0 - ((nx - 0.43) / 0.36) ** 2 - ((ny - 0.43) / 0.11) ** 2,
-                1.0 - ((nx - 0.46) / 0.15) ** 2 - ((ny - 0.57) / 0.18) ** 2,
-                1.0 - ((nx - 0.45) / 0.25) ** 2 - ((ny - 0.72) / 0.11) ** 2,
-                1.0 - ((nx - 0.46) / 0.34) ** 2 - ((ny - 0.86) / 0.20) ** 2,
+            regions = _portrait_regions(nx, ny)
+            mask_gx, mask_gy, semantic_boundary = _semantic_gradient(
+                nx, ny, 1 / columns, 1 / rows
             )
 
-            tonal_signal = max(0.0, min(1.0, (darkness - 0.07) / 0.82))
-            tonal_signal = 0.82 * tonal_signal + 0.18 * local
-            edge_signal = edge * (0.58 + 0.42 * focus)
-            contour_signal = max(
-                edge_signal,
-                local * 0.18 * facial_feature_focus,
-            )
-            strict_background = (light > 0.68 and edge < 0.15 and local < 0.14) or (
-                focus < 0.13 and darkness < 0.48
-            )
+            if regions["foreground"] < style.foreground_cutoff:
+                output_row.append(MosaicCell(glyph=" ", tone=0, opacity=0.0))
+                continue
 
-            edge_threshold: float | None = None
-            if variant == "edge-enhanced":
-                signal = tonal_signal * (0.55 + 0.45 * focus)
-                edge_threshold = 0.055
-            elif variant == "background-suppressed":
+            if regions["hand"] > 0.16:
+                signal = 0.16 + 0.22 * darkness + 0.22 * local + 0.18 * regions["hand"]
+            elif regions["hair"] > 0.08:
+                signal = 0.42 + 0.42 * darkness + 0.16 * regions["hair"]
+            elif regions["beard"] > 0.08:
                 signal = (
-                    0.0 if strict_background else tonal_signal * (0.30 + 0.70 * focus)
+                    0.36
+                    + 0.38 * darkness
+                    + 0.14 * local
+                    + 0.16 * regions["beard"]
                 )
-            elif variant == "combined-tone-edge":
-                signal = (
-                    0.0 if strict_background else tonal_signal * (0.36 + 0.64 * focus)
-                )
-                edge_threshold = 0.055
+            elif regions["hoodie"] > 0.08:
+                signal = 0.09 + 0.30 * darkness + 0.12 * local
             else:
-                # reduced-density, stronger-crop, and simplified-palette isolate
-                # one QA variable while sharing the same restrained tonal base.
-                signal = tonal_signal * (0.52 + 0.48 * focus)
+                signal = 0.08 + 0.28 * darkness + 0.15 * local
 
-            tone = _quantize_tone(max(0.0, min(1.0, signal)))
-            effective_edge_threshold = (
-                edge_threshold * (1.0 - 0.52 * facial_feature_focus)
-                if edge_threshold is not None
-                else None
+            pattern = ((row * 17 + column * 29) % 19) / 18
+            dense_feature = max(regions["hair"], regions["beard"])
+            signal = max(0.0, min(1.0, signal))
+            tone = (
+                _quantize_tone(signal, style.tone_threshold) if style.use_tone else 0
             )
-            edge_is_feature = (
-                effective_edge_threshold is not None
-                and not strict_background
-                and focus >= 0.18
+            keep_threshold = style.sparsity * (1.0 - 0.35 * dense_feature)
+            if tone and pattern < keep_threshold:
+                tone = 0
+            if style.emphasize_gesture:
+                if max(regions["hair"], regions["beard"], regions["hand"]) < 0.08:
+                    tone = 0
+                elif regions["hand"] > max(regions["hair"], regions["beard"]):
+                    tone = min(tone, 1)
+                elif regions["beard"] > regions["hair"]:
+                    tone = min(tone, 2)
+                else:
+                    tone = min(tone, 3)
+            glyph = _glyph_for(tone, gx, gy)
+
+            contour_signal = max(
+                edge if style.use_image_edges else 0.0,
+                semantic_boundary * 0.70 if style.use_semantic_contours else 0.0,
+            )
+            if (
+                contour_signal >= style.edge_threshold
                 and 0 < row < rows - 1
                 and 0 < column < columns - 1
-                and contour_signal >= effective_edge_threshold
-            )
-            if edge_is_feature:
-                tone = max(
+            ):
+                tone = max(tone, 3)
+                glyph = _glyph_for(
                     tone,
-                    min(len(TONE_OPACITIES), 3 + round(contour_signal * 2)),
+                    gx + mask_gx,
+                    gy + mask_gy,
+                    edge=contour_signal,
+                    edge_threshold=style.edge_threshold,
                 )
-            glyph = _glyph_for(
-                tone,
-                gx,
-                gy,
-                edge=contour_signal,
-                edge_threshold=effective_edge_threshold if edge_is_feature else None,
-                tone_glyphs=(
-                    SIMPLIFIED_TONE_GLYPHS
-                    if variant == "simplified-palette"
-                    else PORTRAIT_TONE_GLYPHS
-                ),
-            )
+
+            if style.emphasize_gesture:
+                feature = _gesture_feature(nx, ny, columns, rows)
+                if feature is not None:
+                    glyph, tone = feature
             opacity = 0.0 if tone == 0 else TONE_OPACITIES[tone - 1]
             output_row.append(MosaicCell(glyph=glyph, tone=tone, opacity=opacity))
         cells.append(tuple(output_row))
@@ -648,16 +969,26 @@ def render_portrait_glyphs(
     theme: Theme,
     *,
     group_id: str,
-    x: float = 90,
+    x: float | None = None,
     y: float = 113,
-    row_step: float = 7.7,
+    row_step: float = PORTRAIT_ROW_STEP,
 ) -> str:
     """Render real SVG glyphs with per-cell opacity."""
+
+    if (
+        not PORTRAIT_MIN_COLUMNS <= mosaic.columns <= PORTRAIT_MAX_COLUMNS
+        or not PORTRAIT_MIN_ROWS <= mosaic.rows <= PORTRAIT_MAX_ROWS
+    ):
+        raise ValueError("Portrait mosaic does not fit the hero panel")
+
+    if x is None:
+        x = 32 + (452 - mosaic.columns * PORTRAIT_GLYPH_ADVANCE) / 2
 
     rows = [
         f'    <g id="{group_id}" fill="{theme.accent}" '
         'font-family="ui-monospace,SFMono-Regular,Consolas,monospace" '
-        'font-size="10.2" letter-spacing="0.75">\n'
+        f'font-size="{PORTRAIT_FONT_SIZE}" '
+        f'letter-spacing="{PORTRAIT_LETTER_SPACING}">\n'
     ]
     for row_index, row in enumerate(mosaic.cells):
         baseline = y + row_index * row_step

@@ -1,14 +1,14 @@
 <picture>
   <source
     media="(prefers-color-scheme: dark)"
-    srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/hero-dark.svg?v=3"
+    srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/hero-dark.svg?v=4"
   />
   <source
     media="(prefers-color-scheme: light)"
-    srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/hero-light.svg?v=3"
+    srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/hero-light.svg?v=4"
   />
   <img
-    src="https://raw.githubusercontent.com/MakarenD/MakarenD/output/hero-light.svg?v=3"
+    src="https://raw.githubusercontent.com/MakarenD/MakarenD/output/hero-light.svg?v=4"
     alt="Makaren system profile with an ASCII portrait"
     width="100%"
   />

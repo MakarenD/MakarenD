@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
@@ -43,7 +44,7 @@ class ConfigurationTests(unittest.TestCase):
         self.assertEqual(config["github_username"], "MakarenD")
         self.assertEqual(
             config["portrait"]["crop"],
-            generate.CropConfig(x=0.28, y=0.02, width=0.64, height=0.86),
+            generate.CropConfig(x=0.08, y=0.0, width=0.84, height=0.96),
         )
 
     def test_absent_crop_uses_default(self) -> None:
@@ -55,14 +56,14 @@ class ConfigurationTests(unittest.TestCase):
             config = generate.load_config(path)
         self.assertEqual(
             config["portrait"]["crop"],
-            generate.CropConfig(x=0.28, y=0.02, width=0.64, height=0.86),
+            generate.CropConfig(x=0.08, y=0.0, width=0.84, height=0.96),
         )
 
     def test_production_crop_resolves_to_face_focused_pixel_bounds(self) -> None:
         image = Image.new("RGB", (200, 300), "white")
         crop = generate.CropConfig(*generate.DEFAULT_CROP_VALUES)
         cropped = generate.crop_portrait(image, crop)
-        self.assertEqual(cropped.size, (128, 172))
+        self.assertEqual(cropped.size, (168, 192))
 
     def test_missing_status_is_supported(self) -> None:
         source = json.loads((PROFILE_DIR / "config.json").read_text(encoding="utf-8"))
@@ -110,40 +111,88 @@ class PortraitPipelineTests(unittest.TestCase):
 
     def test_portrait_dimensions_are_character_aspect_corrected(self) -> None:
         mosaic = generate.portrait_mosaic(portrait_fixture(), self.crop)
-        self.assertEqual((mosaic.columns, mosaic.rows), (48, 34))
+        self.assertEqual((mosaic.columns, mosaic.rows), (34, 28))
 
-    def test_quantization_uses_five_coarse_opacity_tones(self) -> None:
+    def test_quantization_uses_four_coarse_opacity_tones(self) -> None:
         mosaic = generate.portrait_mosaic(
-            portrait_fixture(), self.crop, variant="combined-tone-edge"
+            portrait_fixture(), self.crop, variant="gesture-emphasized"
         )
-        self.assertGreaterEqual(len(mosaic.tone_levels), 3)
-        self.assertLessEqual(len(mosaic.tone_levels), 5)
-        self.assertTrue(mosaic.tone_levels <= set(range(1, 6)))
+        self.assertEqual(generate.TONE_OPACITIES, (0.34, 0.58, 0.82, 1.0))
+        self.assertEqual(mosaic.tone_levels, {1, 2, 3, 4})
 
-    def test_palette_is_limited_and_combines_tone_with_directional_edges(self) -> None:
+    def test_palette_is_limited_to_the_portrait_symbol_vocabulary(self) -> None:
         mosaic = generate.portrait_mosaic(
-            portrait_fixture(), self.crop, variant="combined-tone-edge"
+            portrait_fixture(), self.crop, variant="gesture-emphasized"
         )
         glyphs = {cell.glyph for row in mosaic.cells for cell in row}
-        allowed = (
-            set(generate.PORTRAIT_TONE_GLYPHS)
-            | set(generate.PORTRAIT_EDGE_GLYPHS)
-            | {" "}
-        )
-        self.assertTrue(glyphs <= allowed)
-        self.assertLessEqual(len(glyphs - {" "}), 9)
+        self.assertTrue(glyphs <= generate.PORTRAIT_ALLOWED_GLYPHS)
+        self.assertLessEqual(len(glyphs - {" "}), 11)
         self.assertTrue(glyphs & set(generate.PORTRAIT_TONE_GLYPHS))
         self.assertTrue(glyphs & set(generate.PORTRAIT_EDGE_GLYPHS))
+        self.assertTrue(glyphs & set(generate.PORTRAIT_DETAIL_GLYPHS))
 
-    def test_combined_pipeline_suppresses_bright_flat_background(self) -> None:
-        flat = Image.new("RGB", (180, 240), "white")
-        flat_mosaic = generate.portrait_mosaic(flat, self.crop, columns=66)
-        subject_mosaic = generate.portrait_mosaic(
-            portrait_fixture(), self.crop, columns=66
+    def test_committed_gesture_portrait_preserves_recognition_anchors(self) -> None:
+        mosaic = generate.load_portrait_mosaic(
+            PROFILE_DIR / "portrait-mosaic.json"
         )
-        self.assertLess(flat_mosaic.visible_cells, subject_mosaic.visible_cells // 4)
+        rows = tuple("".join(cell.glyph for cell in row) for row in mosaic.cells)
+        visible_ratio = mosaic.visible_cells / (mosaic.columns * mosaic.rows)
+        pupils = [
+            (row, column)
+            for row, glyph_row in enumerate(rows)
+            for column, glyph in enumerate(glyph_row)
+            if glyph == "@"
+        ]
+
+        self.assertEqual((mosaic.columns, mosaic.rows), (34, 28))
+        self.assertTrue(0.20 <= visible_ratio <= 0.38)
+        self.assertEqual(len(pupils), 1)
+        pupil_row, pupil_column = pupils[0]
+
+        ring_rows = rows[pupil_row - 3 : pupil_row + 4]
+        ring_left = "".join(row[pupil_column - 7 : pupil_column] for row in ring_rows)
+        ring_right = "".join(
+            row[pupil_column + 1 : pupil_column + 8] for row in ring_rows
+        )
+        self.assertIn("(", ring_left)
+        self.assertIn(")", ring_right)
+        self.assertTrue(any("-" in row for row in rows[pupil_row - 3 : pupil_row]))
+        self.assertTrue(any("-" in row for row in rows[pupil_row + 1 : pupil_row + 4]))
+
+        def visible_in_region(
+            row_start: int, row_end: int, column_start: int, column_end: int
+        ) -> int:
+            return sum(
+                glyph != " "
+                for row in rows[row_start:row_end]
+                for glyph in row[column_start:column_end]
+            )
+
+        self.assertGreater(visible_in_region(0, 12, 0, 14), 0)  # raised fingers
+        self.assertGreater(visible_in_region(0, 8, 12, 29), 0)  # hair
+        self.assertGreater(visible_in_region(18, 25, 9, 27), 0)  # beard
+        self.assertGreater(visible_in_region(23, 28, 0, 34), 0)  # hoodie
+        self.assertEqual(visible_in_region(0, 10, 28, 34), 0)
+        self.assertGreater(1 - visible_ratio, 0.60)
+
+    def test_rejects_portrait_grid_that_would_exceed_the_hero_panel(self) -> None:
+        with self.assertRaises(ValueError):
+            generate.portrait_mosaic(
+                portrait_fixture(), self.crop, variant="edge-first", columns=40
+            )
 
     def test_all_six_portrait_variants_are_available(self) -> None:
+        self.assertEqual(
+            generate.PORTRAIT_VARIANTS,
+            (
+                "silhouette-first",
+                "edge-first",
+                "sparse-tonal",
+                "sparse-tonal-contour",
+                "foreground-masked",
+                "gesture-emphasized",
+            ),
+        )
         for variant in generate.PORTRAIT_VARIANTS:
             with self.subTest(variant=variant):
                 mosaic = generate.portrait_mosaic(
@@ -162,43 +211,85 @@ class PortraitPipelineTests(unittest.TestCase):
         self.assertEqual(presets[-1].crop, self.crop)
 
         image = portrait_fixture()
-        mosaics = [
+        same_resolution_mosaics = [
             generate.portrait_mosaic(
                 image,
-                preset.crop,
-                variant=preset.name,
-                columns=preset.columns,
+                self.crop,
+                variant=variant,
+                columns=generate.PORTRAIT_COLUMNS,
             )
-            for preset in presets
+            for variant in generate.PORTRAIT_VARIANTS
         ]
         signatures = {
-            (
-                mosaic.columns,
-                mosaic.rows,
-                tuple("".join(cell.glyph for cell in row) for row in mosaic.cells),
-            )
-            for mosaic in mosaics
+            tuple("".join(cell.glyph for cell in row) for row in mosaic.cells)
+            for mosaic in same_resolution_mosaics
         }
         self.assertEqual(len(signatures), len(presets))
 
-        simplified = mosaics[4]
-        simplified_tonal_glyphs = {
-            cell.glyph
-            for row in simplified.cells
-            for cell in row
-            if cell.glyph not in generate.PORTRAIT_EDGE_GLYPHS and cell.glyph != " "
-        }
-        self.assertTrue(simplified_tonal_glyphs <= set(generate.SIMPLIFIED_TONE_GLYPHS))
-
     def test_derived_mosaic_cache_round_trips(self) -> None:
         mosaic = generate.portrait_mosaic(
-            portrait_fixture(), self.crop, variant="combined-tone-edge", columns=24
+            portrait_fixture(), self.crop, variant="gesture-emphasized", columns=24
         )
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp) / "portrait.json"
             generate.save_portrait_mosaic(mosaic, path)
             loaded = generate.load_portrait_mosaic(path)
         self.assertEqual(loaded, mosaic)
+
+    def test_derived_mosaic_cache_rejects_inconsistent_cells_and_size(self) -> None:
+        mosaic = generate.portrait_mosaic(
+            portrait_fixture(), self.crop, variant="gesture-emphasized", columns=24
+        )
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "portrait.json"
+            generate.save_portrait_mosaic(mosaic, path)
+            valid = json.loads(path.read_text(encoding="utf-8"))
+
+            invalid_payloads: list[tuple[str, dict[str, object]]] = []
+            for label, invalid_tone in (("fractional", 1.5), ("string", "1")):
+                payload = json.loads(json.dumps(valid))
+                payload["tone_rows"][0][0] = invalid_tone
+                invalid_payloads.append((label, payload))
+
+            zero_tone_glyph = json.loads(json.dumps(valid))
+            zero_tone_glyph["glyph_rows"][0] = (
+                "@" + zero_tone_glyph["glyph_rows"][0][1:]
+            )
+            zero_tone_glyph["tone_rows"][0][0] = 0
+            invalid_payloads.append(("zero-tone glyph", zero_tone_glyph))
+
+            positive_tone_space = json.loads(json.dumps(valid))
+            positive_tone_space["glyph_rows"][0] = (
+                " " + positive_tone_space["glyph_rows"][0][1:]
+            )
+            positive_tone_space["tone_rows"][0][0] = 1
+            invalid_payloads.append(("positive-tone space", positive_tone_space))
+
+            for label, columns, rows in (("wide", 49, 16), ("tall", 16, 31)):
+                invalid_payloads.append(
+                    (
+                        label,
+                        {
+                            "version": generate.PORTRAIT_CACHE_VERSION,
+                            "variant": "gesture-emphasized",
+                            "columns": columns,
+                            "rows": rows,
+                            "glyph_rows": [" " * columns for _ in range(rows)],
+                            "tone_rows": [[0] * columns for _ in range(rows)],
+                        },
+                    )
+                )
+
+            for label, invalid_columns in (("string size", "24"), ("float size", 24.0)):
+                payload = json.loads(json.dumps(valid))
+                payload["columns"] = invalid_columns
+                invalid_payloads.append((label, payload))
+
+            for label, payload in invalid_payloads:
+                with self.subTest(label=label):
+                    path.write_text(json.dumps(payload), encoding="utf-8")
+                    with self.assertRaises(generate.GenerationError):
+                        generate.load_portrait_mosaic(path)
 
     def test_local_avatar_precedes_github_fallback(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -260,6 +351,18 @@ class SvgTests(unittest.TestCase):
         self.assertIn('id="activity-static-base-grid"', svg)
         self.assertIn('id="activity-colored-reveal-layer"', svg)
 
+    def test_activity_rendering_is_unchanged_for_both_themes(self) -> None:
+        expected = {
+            "dark": "e00c66a20eb3c9bc04887ffc574473762b375d6705c5d1a325ee3e77ed562935",
+            "light": "958255207ca418b0c4b61b204283df3a73950ebb0de085828a0e0bd261d845b9",
+        }
+        for theme_name, digest in expected.items():
+            with self.subTest(theme=theme_name):
+                svg = generate.render_activity(
+                    generate.THEMES[theme_name], self.calendar
+                )
+                self.assertEqual(hashlib.sha256(svg.encode()).hexdigest(), digest)
+
     def test_svg_contains_true_glyphs_not_a_raster(self) -> None:
         hero = generate.render_hero(generate.THEMES["dark"], self.config, self.mosaic)
         root = ET.fromstring(hero)
@@ -270,17 +373,15 @@ class SvgTests(unittest.TestCase):
         self.assertNotIn("base64", lowered)
 
     def test_animations_use_repeating_native_clip_reveals(self) -> None:
-        self.assertTrue(1.6 <= generate.ANIMATION_REVEAL_SECONDS <= 2.0)
-        self.assertTrue(2.5 <= generate.ANIMATION_HOLD_SECONDS <= 3.5)
-        self.assertTrue(0.2 <= generate.ANIMATION_RESET_SECONDS <= 0.4)
-        self.assertTrue(0.2 <= generate.ANIMATION_PAUSE_SECONDS <= 0.4)
-        self.assertTrue(4.5 <= generate.ANIMATION_CYCLE_SECONDS <= 6.0)
-        self.assertAlmostEqual(
-            generate.ANIMATION_CYCLE_SECONDS,
-            generate.ANIMATION_REVEAL_SECONDS
-            + generate.ANIMATION_HOLD_SECONDS
-            + generate.ANIMATION_RESET_SECONDS
-            + generate.ANIMATION_PAUSE_SECONDS,
+        self.assertEqual(
+            (
+                generate.ANIMATION_REVEAL_SECONDS,
+                generate.ANIMATION_HOLD_SECONDS,
+                generate.ANIMATION_RESET_SECONDS,
+                generate.ANIMATION_PAUSE_SECONDS,
+                generate.ANIMATION_CYCLE_SECONDS,
+            ),
+            (1.8, 3.0, 0.3, 0.3, 5.4),
         )
 
         variants: list[str] = []
@@ -297,6 +398,17 @@ class SvgTests(unittest.TestCase):
             + generate.ANIMATION_RESET_SECONDS,
             generate.ANIMATION_CYCLE_SECONDS,
         )
+        scan_times = generate._animation_key_times(
+            0,
+            generate.ANIMATION_REVEAL_SECONDS,
+            generate.ANIMATION_REVEAL_SECONDS + 0.12,
+            generate.ANIMATION_REVEAL_SECONDS
+            + generate.ANIMATION_HOLD_SECONDS
+            + generate.ANIMATION_RESET_SECONDS,
+            generate.ANIMATION_CYCLE_SECONDS,
+        )
+        self.assertEqual(phase_times, "0;0.333333;0.888889;0.944444;1")
+        self.assertEqual(scan_times, "0;0.333333;0.355556;0.944444;1")
         for svg in variants:
             self.assertIn("<clipPath", svg)
             self.assertIn('repeatCount="indefinite"', svg)
@@ -310,6 +422,7 @@ class SvgTests(unittest.TestCase):
                 )
             )
             self.assertIn(f'keyTimes="{phase_times}"', svg)
+            self.assertIn(f'keyTimes="{scan_times}"', svg)
             self.assertNotIn("<script", svg.lower())
 
         hero, activity = variants[:2]

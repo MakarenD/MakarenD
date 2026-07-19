@@ -8,10 +8,10 @@
   "location": "Europe",
   "portrait": {
     "crop": {
-      "x": 0.28,
-      "y": 0.02,
-      "width": 0.64,
-      "height": 0.86
+      "x": 0.08,
+      "y": 0.0,
+      "width": 0.84,
+      "height": 0.96
     }
   }
 }
