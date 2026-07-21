@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 1000 190" role="img" aria-labelledby="signal-title signal-description">
+  <title id="signal-title">Makaren connected systems</title>
+  <desc id="signal-description">Manually configured projects and organizations connected to the signal.</desc>
+  <style>
+      :root { color-scheme: light; }
+      .sans { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', monospace; }
+      .label { fill: #5E6B78; font-size: 11px; letter-spacing: 2px; }
+      .copy { fill: #17212B; }
+      .muted { fill: #5E6B78; }
+      .signal { fill: #087F8C; }
+      .line { stroke: #CBD5DD; }
+      .final-opacity { opacity: var(--final-opacity, 1); }
+      .reveal { animation: reveal var(--reveal-duration, .32s) ease-out var(--reveal-delay, 0s) both; }
+      .draw { animation: draw var(--draw-duration, 1.5s) ease-out var(--draw-delay, 0s) both; }
+      .connection { vector-effect: non-scaling-stroke; }
+      @keyframes reveal { from { opacity: 0; } to { opacity: var(--final-opacity, 1); } }
+      @keyframes draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+      @media (prefers-reduced-motion: reduce) {
+        .motion { display: none !important; }
+        .reveal { animation: none !important; opacity: var(--final-opacity, 1) !important; }
+        .draw { animation: none !important; stroke-dashoffset: 0 !important; }
+      }
+
+      .motion { display: none !important; }
+      .reveal { animation: none !important; opacity: var(--final-opacity, 1) !important; }
+      .draw { animation: none !important; stroke-dashoffset: 0 !important; }
+
+    </style>
+  <rect width="1000" height="190" fill="#F7F9FB" rx="12"/>
+<text class="sans copy" x="48" y="51" font-size="25" font-weight="650" letter-spacing="1">CONNECTED SYSTEMS</text><line x1="86" y1="102" x2="86" y2="102" stroke="#55B8C1"/><g class="system-node" data-system-index="0" data-system-url="https://github.com/UNIVER-Project"><circle cx="86" cy="102" r="5.5" fill="#F7F9FB" stroke="#087F8C" stroke-width="1.5"/><line x1="92" y1="102" x2="107" y2="102" stroke="#CBD5DD"/><text class="mono copy" x="116" y="98" font-size="15" font-weight="600" letter-spacing="1">UNIVER-PROJECT</text><text class="mono muted" x="116" y="120" font-size="9" letter-spacing="1.2">GITHUB ORGANIZATION</text><text class="mono signal" x="116" y="138" font-size="8">GITHUB.COM/UNIVER-PROJECT</text></g><text class="mono muted" x="952" y="162" font-size="8" text-anchor="end">MANUAL CONFIG / 01 NODE</text></svg>
