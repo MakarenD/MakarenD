@@ -13,29 +13,29 @@
 <br />
 
 <picture>
-  <source media="(max-width: 480px) and (prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-dark-mobile-reduced.svg?v=2" />
-  <source media="(max-width: 480px) and (prefers-reduced-motion: reduce) and (prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-light-mobile-reduced.svg?v=2" />
-  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-dark-reduced.svg?v=2" />
-  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-light-reduced.svg?v=2" />
-  <source media="(max-width: 480px) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-dark-mobile.svg?v=2" />
-  <source media="(max-width: 480px) and (prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-light-mobile.svg?v=2" />
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-dark.svg?v=2" />
-  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-light.svg?v=2" />
-  <img src="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-light.svg?v=2" width="100%" alt="Makaren capabilities" />
+  <source media="(max-width: 480px) and (prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-dark-mobile-reduced.svg?v=3" />
+  <source media="(max-width: 480px) and (prefers-reduced-motion: reduce) and (prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-light-mobile-reduced.svg?v=3" />
+  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-dark-reduced.svg?v=3" />
+  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-light-reduced.svg?v=3" />
+  <source media="(max-width: 480px) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-dark-mobile.svg?v=3" />
+  <source media="(max-width: 480px) and (prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-light-mobile.svg?v=3" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-dark.svg?v=3" />
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-light.svg?v=3" />
+  <img src="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-light.svg?v=3" width="100%" alt="Makaren capabilities" />
 </picture>
 
 <br />
 
 <picture>
-  <source media="(max-width: 480px) and (prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-dark-mobile-reduced.svg?v=2" />
-  <source media="(max-width: 480px) and (prefers-reduced-motion: reduce) and (prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-light-mobile-reduced.svg?v=2" />
-  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-dark-reduced.svg?v=2" />
-  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-light-reduced.svg?v=2" />
-  <source media="(max-width: 480px) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-dark-mobile.svg?v=2" />
-  <source media="(max-width: 480px) and (prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-light-mobile.svg?v=2" />
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-dark.svg?v=2" />
-  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-light.svg?v=2" />
-  <img src="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-light.svg?v=2" width="100%" alt="Makaren Signal history" />
+  <source media="(max-width: 480px) and (prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-dark-mobile-reduced.svg?v=3" />
+  <source media="(max-width: 480px) and (prefers-reduced-motion: reduce) and (prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-light-mobile-reduced.svg?v=3" />
+  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-dark-reduced.svg?v=3" />
+  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-light-reduced.svg?v=3" />
+  <source media="(max-width: 480px) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-dark-mobile.svg?v=3" />
+  <source media="(max-width: 480px) and (prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-light-mobile.svg?v=3" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-dark.svg?v=3" />
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-light.svg?v=3" />
+  <img src="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-light.svg?v=3" width="100%" alt="Makaren Signal history" />
 </picture>
 
 <br />
@@ -63,7 +63,7 @@
 <!-- IDENTITY_FOOTER:START -->
 <div align="center">
   <sub>
-    <a href="https://makaren.pro">MAKAREN.PRO ↗</a>
+    <a href="https://makaren.pro">MAKAREN.PRO</a>
     · SOFTWARE ENGINEERING · EUROPE
   </sub>
 </div>

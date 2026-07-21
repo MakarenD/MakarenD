@@ -59,6 +59,20 @@ def _asset_html(
     </style></head><body><img id="asset" src="{base_url}/dist/signal-{section}-{theme}{mobile}{reduced_suffix}.svg"></body></html>"""
 
 
+def _inline_asset_html(
+    section: str, theme: str, width: int, reduced: bool = False
+) -> str:
+    mobile = "-mobile" if width <= 480 else ""
+    reduced_suffix = "-reduced" if reduced else ""
+    source = (
+        ROOT / "dist" / f"signal-{section}-{theme}{mobile}{reduced_suffix}.svg"
+    ).read_text(encoding="utf-8")
+    background = "#0d1117" if theme == "dark" else "#ffffff"
+    return f"""<!doctype html><html><head><meta charset="utf-8"><style>
+      html,body{{margin:0;background:{background}}} svg{{display:block;width:100%;height:auto}}
+    </style></head><body>{source}</body></html>"""
+
+
 def _systems_fixture_html(base_url: str, theme: str, width: int) -> str:
     mobile = "-mobile" if width <= 480 else ""
     background = "#0d1117" if theme == "dark" else "#ffffff"
@@ -127,6 +141,24 @@ def _capture(page: Page, html: str, path: Path, wait_ms: int) -> None:
     page.screenshot(path=str(path), full_page=True, animations="allow")
 
 
+def _capture_asset_at_time(
+    page: Page,
+    section: str,
+    theme: str,
+    width: int,
+    path: Path,
+    time_s: float,
+    reduced: bool = False,
+) -> None:
+    page.set_content(
+        _inline_asset_html(section, theme, width, reduced), wait_until="networkidle"
+    )
+    if not reduced:
+        page.locator("svg").evaluate("(svg, time) => svg.setCurrentTime(time)", time_s)
+    page.wait_for_timeout(50)
+    page.screenshot(path=str(path), full_page=True, animations="allow")
+
+
 def _new_page(browser: Browser, width: int, theme: str, reduced: bool) -> Page:
     context = browser.new_context(
         viewport={"width": width, "height": 900},
@@ -155,7 +187,7 @@ def run(output_dir: Path) -> dict[str, object]:
                             page,
                             _readme_html(base_url, theme),
                             path,
-                            100 if reduced else 2200,
+                            50 if reduced else 250,
                         )
                         selected = page.locator("img").evaluate_all(
                             "images => images.map(image => image.currentSrc)"
@@ -205,53 +237,66 @@ def run(output_dir: Path) -> dict[str, object]:
                     page = _new_page(browser, width, theme, False)
                     path = output_dir / f"{theme}-{width}-systems-fixture.png"
                     _capture(
-                        page, _systems_fixture_html(base_url, theme, width), path, 100
+                        page, _systems_fixture_html(base_url, theme, width), path, 50
                     )
                     captures.append(path.name)
                     page.context.close()
 
             timeline = {
                 "hero": (
-                    ("initial", 30),
-                    ("assembly", 850),
-                    ("final", 1900),
-                    ("pulse", 7550),
+                    ("initial", 0.0),
+                    ("assembly", 0.85),
+                    ("final", 1.9),
+                    ("pulse", 7.55),
                 ),
                 "history": (
-                    ("initial", 30),
-                    ("draw-25", 650),
-                    ("draw-50", 1250),
-                    ("final", 2500),
-                    ("pulse-start", 3550),
-                    ("pulse-middle", 4700),
-                    ("pulse-end", 5850),
-                    ("pulse-repeat", 7050),
+                    ("empty", 0.0),
+                    ("build-early", 0.8),
+                    ("build-50", 1.75),
+                    ("complete", 3.5),
+                    ("hold-middle", 6.0),
+                    ("collapse-start", 8.5),
+                    ("collapse-partial", 9.1),
+                    ("collapsed", 9.7),
+                    ("next-build", 10.4),
                 ),
             }
             for theme in ("dark", "light"):
                 for section, moments in timeline.items():
-                    for label, wait_ms in moments:
+                    for label, time_s in moments:
                         page = _new_page(browser, 1000, theme, False)
                         path = output_dir / f"{theme}-1000-{section}-{label}.png"
-                        _capture(
-                            page,
-                            _asset_html(base_url, section, theme, 1000),
-                            path,
-                            wait_ms,
-                        )
+                        _capture_asset_at_time(page, section, theme, 1000, path, time_s)
                         captures.append(path.name)
                         page.context.close()
 
+            history_frames = {
+                label: (output_dir / f"dark-1000-history-{label}.png").read_bytes()
+                for label, _ in timeline["history"]
+            }
+            if (
+                hashlib.sha256(history_frames["empty"]).digest()
+                == hashlib.sha256(history_frames["build-early"]).digest()
+            ):
+                raise RuntimeError("History build did not change the initial frame")
+            if (
+                hashlib.sha256(history_frames["complete"]).digest()
+                != hashlib.sha256(history_frames["hold-middle"]).digest()
+            ):
+                raise RuntimeError("History hold was not visually stable")
+            if (
+                hashlib.sha256(history_frames["collapsed"]).digest()
+                == hashlib.sha256(history_frames["next-build"]).digest()
+            ):
+                raise RuntimeError("History did not begin the next build cycle")
+
             for section in ("hero", "history"):
                 hashes = []
-                for label, wait_ms in (("t0", 100), ("t6", 6000)):
+                for label, time_s in (("t0", 0.0), ("t6", 6.0)):
                     page = _new_page(browser, 1000, "dark", True)
                     path = output_dir / f"dark-1000-{section}-reduced-{label}.png"
-                    _capture(
-                        page,
-                        _asset_html(base_url, section, "dark", 1000, True),
-                        path,
-                        wait_ms,
+                    _capture_asset_at_time(
+                        page, section, "dark", 1000, path, time_s, reduced=True
                     )
                     captures.append(path.name)
                     hashes.append(hashlib.sha256(path.read_bytes()).hexdigest())

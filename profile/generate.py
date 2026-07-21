@@ -156,7 +156,7 @@ def identity_footer_block(config: Mapping[str, object]) -> str:
     site = escape(str(identity["site"]).upper())
     site_url = escape(str(identity["site_url"]), quote=True)
     location = escape(str(identity["location"]).upper())
-    return f'<div align="center">\n  <sub>\n    <a href="{site_url}">{site} ↗</a>\n    · SOFTWARE ENGINEERING · {location}\n  </sub>\n</div>'
+    return f'<div align="center">\n  <sub>\n    <a href="{site_url}">{site}</a>\n    · SOFTWARE ENGINEERING · {location}\n  </sub>\n</div>'
 
 
 def _replace_marker_block(source: str, markers: tuple[str, str], content: str) -> str:

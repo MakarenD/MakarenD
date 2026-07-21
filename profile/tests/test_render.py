@@ -13,6 +13,7 @@ from profile.generate import (
     README,
     connected_systems_block,
     generate,
+    identity_footer_block,
     load_config,
     sync_readme,
 )
@@ -159,20 +160,89 @@ class RenderTests(unittest.TestCase):
         self.assertGreaterEqual(
             reduced.count(".motion { display: none !important; }"), 2
         )
-        self.assertIn("history-pulse-motion", history)
         self.assertIn('data-week-count="52"', history)
-        self.assertIn('data-initial-draw="2.4s"', history)
-        self.assertIn('data-pulse-duration="2.4s"', history)
-        self.assertIn('data-pulse-gap="1.1s"', history)
-        self.assertIn('data-cycle="3.5s"', history)
-        self.assertIn("history-pulse-halo-motion", history)
-        self.assertIn("history-pulse-trail", history)
-        self.assertIn("history-pulse-points-mask", history)
-        self.assertNotIn(
-            "history-pulse-motion",
-            (self.output / "signal-history-dark-reduced.svg").read_text(
-                encoding="utf-8"
+        self.assertIn('data-animation="cyclic-reveal"', history)
+        self.assertIn('data-build-duration="3.5s"', history)
+        self.assertIn('data-hold-duration="5.0s"', history)
+        self.assertIn('data-collapse-duration="1.2s"', history)
+        self.assertIn('data-pause-duration="0.3s"', history)
+        self.assertIn('data-cycle="10.0s"', history)
+        phases = [3.5, 5.0, 1.2, 0.3]
+        self.assertAlmostEqual(sum(phases), 10.0)
+        self.assertIn('id="history-reveal-clip"', history)
+        self.assertIn('id="history-reveal-width"', history)
+        self.assertIn('values="0;876.00;876.00;0;0"', history)
+        self.assertIn('keyTimes="0;0.35;0.85;0.97;1"', history)
+        self.assertIn('dur="10s"', history)
+        self.assertIn('id="history-scan-front"', history)
+        self.assertNotIn("history-pulse-motion", history)
+        self.assertNotIn("history-pulse-halo-motion", history)
+        self.assertNotIn("history-pulse-trail", history)
+        self.assertNotIn("history-pulse-points-mask", history)
+        self.assertNotIn("animateMotion", history)
+        history_root = ET.fromstring(history)
+        by_id = {
+            element.attrib["id"]: element
+            for element in history_root.iter()
+            if "id" in element.attrib
+        }
+        data = by_id["history-data"]
+        self.assertEqual("url(#history-reveal-clip)", data.attrib["clip-path"])
+        self.assertNotIn("clip-path", by_id["history-baseline"].attrib)
+        self.assertNotIn("clip-path", by_id["history-static"].attrib)
+        data_ids = {
+            element.attrib.get("id")
+            for element in data.iter()
+            if "id" in element.attrib
+        }
+        self.assertTrue(
+            {
+                "history-area",
+                "history-wave",
+                "history-peak-marker",
+                "history-current-marker",
+            }
+            <= data_ids
+        )
+        self.assertEqual(
+            52,
+            sum(
+                "weekly-point" in element.attrib.get("class", "")
+                for element in data.iter()
             ),
+        )
+        static = by_id["history-static"]
+        self.assertTrue(
+            any(
+                "month-label" in element.attrib.get("class", "")
+                for element in static.iter()
+            )
+        )
+        reduced_history = (self.output / "signal-history-dark-reduced.svg").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('data-animation="cyclic-reveal"', reduced_history)
+        self.assertNotIn("history-reveal-clip", reduced_history)
+        self.assertNotIn("<animate", reduced_history)
+        self.assertNotIn("<script", reduced_history.lower())
+        reduced_root = ET.fromstring(reduced_history)
+        reduced_data = next(
+            element
+            for element in reduced_root.iter()
+            if element.attrib.get("id") == "history-data"
+        )
+        self.assertEqual(
+            52,
+            sum(
+                "weekly-point" in element.attrib.get("class", "")
+                for element in reduced_data.iter()
+            ),
+        )
+        self.assertTrue(
+            any(
+                element.attrib.get("id") == "history-area"
+                for element in reduced_data.iter()
+            )
         )
         self.assertIn("--draw-duration:.65s", capabilities)
         cycles = [
@@ -180,7 +250,20 @@ class RenderTests(unittest.TestCase):
             for value in re.findall(r'data-cycle="([0-9.]+)s"', hero + history)
         ]
         self.assertTrue(cycles)
-        self.assertIn(3.5, cycles)
+        self.assertIn(10.0, cycles)
+
+    def test_capabilities_keep_python_in_all_variants_without_overflow_text(
+        self,
+    ) -> None:
+        backend = ".NET · C# · Python · Node.js · PHP · Lua"
+        for theme in ("dark", "light"):
+            for suffix in ("", "-mobile", "-reduced", "-mobile-reduced"):
+                source = (
+                    self.output / f"signal-capabilities-{theme}{suffix}.svg"
+                ).read_text(encoding="utf-8")
+                self.assertIn(backend, source)
+                self.assertEqual(1, source.count("Python"))
+                self.assertNotIn("textLength=", source)
 
     def test_connected_system_assets_use_config_order_and_safe_filename(self) -> None:
         config = load_config(DEFAULT_CONFIG)
@@ -225,7 +308,13 @@ class RenderTests(unittest.TestCase):
         self.assertIn('<a href="https://github.com/UNIVER-Project"', readme)
         self.assertIn("signal-system-univer-project-dark.svg?v=2", readme)
         self.assertIn('aria-label="Open UNIVER-Project"', readme)
-        self.assertIn('<a href="https://makaren.pro">MAKAREN.PRO ↗</a>', readme)
+        self.assertIn('<a href="https://makaren.pro">MAKAREN.PRO</a>', readme)
+        self.assertNotIn("↗", readme)
+        self.assertEqual(9, readme.count("signal-capabilities-"))
+        self.assertEqual(9, readme.count("signal-history-"))
+        self.assertNotRegex(
+            readme, r"signal-(?:capabilities|history)-[^\" ]+\.svg\?v=(?!3\b)"
+        )
         self.assertIn("prefers-reduced-motion: reduce", readme)
         for forbidden in (
             "typing-svg",
@@ -237,6 +326,17 @@ class RenderTests(unittest.TestCase):
             "streak",
         ):
             self.assertNotIn(forbidden, readme.lower())
+
+    def test_footer_uses_identity_site_and_url_without_arrow(self) -> None:
+        config = load_config(DEFAULT_CONFIG)
+        identity = dict(config["identity"])
+        identity["site"] = "example.test"
+        identity["site_url"] = "https://example.test"
+        config["identity"] = identity
+        footer = identity_footer_block(config)
+        self.assertIn('<a href="https://example.test">EXAMPLE.TEST</a>', footer)
+        self.assertNotIn("↗", footer)
+        self.assertNotIn('target="_blank"', footer)
 
     def test_readme_sync_is_idempotent_and_updates_only_marker_blocks(self) -> None:
         before = README.read_text(encoding="utf-8")

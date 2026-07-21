@@ -407,6 +407,18 @@ def render_history(
         range(len(weeks)), key=lambda index: weeks[index].total_contributions
     )
     peak = points[peak_index]
+    left = points[0][0]
+    right = points[-1][0]
+    chart_top = 70
+    chart_height = height - chart_top
+    reveal_width = right - left
+    peak_label_x = peak[0] - 6 if peak[0] > width - 72 else peak[0]
+    peak_label_anchor = "end" if peak[0] > width - 72 else "middle"
+    timeline_attributes = (
+        'data-animation="cyclic-reveal" data-build-duration="3.5s" '
+        'data-hold-duration="5.0s" data-collapse-duration="1.2s" '
+        'data-pause-duration="0.3s" data-cycle="10.0s"'
+    )
     svg = [
         _svg_open(
             width,
@@ -417,60 +429,69 @@ def render_history(
             static,
         )
     ]
-    svg.append(
-        f'<text class="sans copy" x="{24 if mobile else 48}" y="{46 if mobile else 48}" font-size="{23 if mobile else 25}" font-weight="650" letter-spacing="1">SIGNAL HISTORY</text>'
-    )
-    svg.append(
-        f'<text class="mono muted" x="{width - (24 if mobile else 48)}" y="{68 if mobile else 46}" font-size="9" text-anchor="end" letter-spacing="1">52 WEEKS / ROBUST LOG SCALE</text>'
-    )
-    svg.append(
-        f'<line x1="{points[0][0]:.2f}" y1="{baseline}" x2="{points[-1][0]:.2f}" y2="{baseline}" stroke="{theme.line}"/>'
-    )
     area = f"{path} L {points[-1][0]:.2f} {baseline} L {points[0][0]:.2f} {baseline} Z"
-    svg.append(
-        f'<path class="reveal" style="{_reveal_style(0.055, 0.35, 2.05)}" d="{area}" fill="{theme.signal}" opacity="0.055"/>'
-    )
-    svg.append(
-        f'<path class="draw" style="--draw-duration:2.4s" id="history-wave" data-week-count="52" data-initial-draw="2.4s" data-pulse-duration="2.4s" data-pulse-gap="1.1s" data-cycle="3.5s" d="{path}" fill="none" stroke="{theme.signal}" stroke-width="2" '
-        f'stroke-linecap="round" stroke-linejoin="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="0"/>'
-    )
-    for index, ((x, y), week) in enumerate(zip(points, weeks)):
-        point_style = _reveal_style(0.5, 0.42 + index * 0.036, 0.24)
-        svg.append(
-            f'<circle class="weekly-point reveal" style="{point_style}" data-week="{index}" '
-            f'data-total="{week.total_contributions}" data-active-days="{week.active_days}" '
-            f'cx="{x:.2f}" cy="{y:.2f}" r="1.6" fill="{theme.signal}" opacity="0.5"/>'
-        )
-
     months: set[tuple[int, int]] = set()
+    month_marks = []
     for index, week in enumerate(weeks):
         marker = (week.start.year, week.start.month)
         if marker in months:
             continue
         months.add(marker)
         x = points[index][0]
-        svg.append(
-            f'<line x1="{x:.2f}" y1="{baseline + 5}" x2="{x:.2f}" y2="{baseline + 10}" stroke="{theme.line}"/>'
+        month_marks.append(
+            f'<line class="month-tick" x1="{x:.2f}" y1="{baseline + 5}" x2="{x:.2f}" y2="{baseline + 10}" stroke="{theme.line}"/>'
         )
         if not mobile or len(months) % 2 == 1:
-            svg.append(
-                f'<text class="mono muted" x="{x:.2f}" y="{baseline + 26}" font-size="8">{week.start.strftime("%b").upper()}</text>'
+            month_marks.append(
+                f'<text class="mono muted month-label" x="{x:.2f}" y="{baseline + 26}" font-size="8">{week.start.strftime("%b").upper()}</text>'
             )
-
     svg.append(
-        f'<g class="reveal" style="{_reveal_style(1, 2.48, 0.32)}">'
-        f'<circle cx="{peak[0]:.2f}" cy="{peak[1]:.2f}" r="4" fill="{theme.background}" stroke="{theme.signal}" stroke-width="1.4"/>'
-        f'<text class="mono signal" x="{peak[0]:.2f}" y="{max(76, peak[1] - 13):.2f}" font-size="8" text-anchor="middle">PEAK {weeks[peak_index].total_contributions}</text>'
-        f'<line x1="{points[-1][0]:.2f}" y1="{points[-1][1]:.2f}" x2="{points[-1][0]:.2f}" y2="{baseline}" stroke="{theme.signal_soft}" stroke-dasharray="2 4"/>'
-        f'<text class="mono muted" x="{points[-1][0]:.2f}" y="{baseline + 42}" font-size="8" text-anchor="end">CURRENT</text></g>'
+        f'<g id="history-static">'
+        f'<text class="sans copy" x="{24 if mobile else 48}" y="{46 if mobile else 48}" font-size="{23 if mobile else 25}" font-weight="650" letter-spacing="1">SIGNAL HISTORY</text>'
+        f'<text class="mono muted" x="{width - (24 if mobile else 48)}" y="{68 if mobile else 46}" font-size="9" text-anchor="end" letter-spacing="1">52 WEEKS / ROBUST LOG SCALE</text>'
+        f'<line id="history-baseline" x1="{left:.2f}" y1="{baseline}" x2="{right:.2f}" y2="{baseline}" stroke="{theme.line}"/>'
+        f"{''.join(month_marks)}</g>"
     )
     if not static:
         svg.append(
-            f'''<defs><filter id="history-pulse-glow" x="-30%" y="-60%" width="160%" height="220%"><feGaussianBlur stdDeviation="2.2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter><mask id="history-pulse-points-mask"><rect width="{width}" height="{height}" fill="black"/><circle r="24" fill="white"><animateMotion id="history-points-mask-motion" path="{path}" begin="3.5s;history-points-mask-motion.end+1.1s" dur="2.4s" fill="freeze"/></circle></mask></defs>
-            <g class="motion" mask="url(#history-pulse-points-mask)" opacity=".82">{"".join(f'<circle cx="{x:.2f}" cy="{y:.2f}" r="3.4" fill="{theme.signal}"/>' for x, y in points)}</g>
-            <path class="motion" d="{path}" fill="none" stroke="{theme.signal}" stroke-width="3.4" stroke-linecap="round" pathLength="1" stroke-dasharray=".10 .90" opacity="0" filter="url(#history-pulse-glow)"><animate id="history-pulse-trail" attributeName="stroke-dashoffset" from="0" to="-1" begin="3.5s;history-pulse-trail.end+1.1s" dur="2.4s" fill="freeze"/><animate attributeName="opacity" values="0;.58;.58;0" keyTimes="0;.06;.92;1" begin="3.5s;history-pulse-trail-opacity.end+1.1s" dur="2.4s" fill="freeze" id="history-pulse-trail-opacity"/></path>
-            <circle class="motion" r="11" fill="{theme.signal}" opacity="0" filter="url(#history-pulse-glow)"><animateMotion id="history-pulse-halo-motion" path="{path}" begin="3.5s;history-pulse-halo-motion.end+1.1s" dur="2.4s" fill="freeze"/><animate id="history-pulse-halo-opacity" attributeName="opacity" values="0;.17;.17;0" keyTimes="0;.06;.92;1" begin="3.5s;history-pulse-halo-opacity.end+1.1s" dur="2.4s" fill="freeze"/></circle>
-            <circle class="motion" r="5.2" fill="{theme.signal}" opacity="0"><animateMotion id="history-pulse-motion" path="{path}" begin="3.5s;history-pulse-motion.end+1.1s" dur="2.4s" fill="freeze"/><animate id="history-pulse-opacity" attributeName="opacity" values="0;.88;.88;0" keyTimes="0;.06;.92;1" begin="3.5s;history-pulse-opacity.end+1.1s" dur="2.4s" fill="freeze"/></circle>'''
+            f'''<defs>
+              <clipPath id="history-reveal-clip" clipPathUnits="userSpaceOnUse">
+                <rect id="history-reveal-window" x="{left:.2f}" y="{chart_top}" width="0" height="{chart_height}">
+                  <animate id="history-reveal-width" attributeName="width" values="0;{reveal_width:.2f};{reveal_width:.2f};0;0" keyTimes="0;0.35;0.85;0.97;1" dur="10s" repeatCount="indefinite" calcMode="linear"/>
+                </rect>
+              </clipPath>
+              <filter id="history-scan-glow" x="-100%" y="-20%" width="300%" height="140%"><feGaussianBlur stdDeviation="1.1" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>'''
+        )
+    data_clip = "" if static else ' clip-path="url(#history-reveal-clip)"'
+    data = [
+        f'<path id="history-area" d="{area}" fill="{theme.signal}" opacity="0.055"/>',
+        f'<path id="history-wave" data-week-count="52" d="{path}" fill="none" stroke="{theme.signal}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+    ]
+    for index, ((x, y), week) in enumerate(zip(points, weeks)):
+        data.append(
+            f'<circle class="weekly-point" data-week="{index}" '
+            f'data-total="{week.total_contributions}" data-active-days="{week.active_days}" '
+            f'cx="{x:.2f}" cy="{y:.2f}" r="1.6" fill="{theme.signal}" opacity="0.5"/>'
+        )
+    data.append(
+        f'<g id="history-peak-marker">'
+        f'<circle cx="{peak[0]:.2f}" cy="{peak[1]:.2f}" r="4" fill="{theme.background}" stroke="{theme.signal}" stroke-width="1.4"/>'
+        f'<text class="mono signal" x="{peak_label_x:.2f}" y="{max(76, peak[1] - 13):.2f}" font-size="8" text-anchor="{peak_label_anchor}">PEAK {weeks[peak_index].total_contributions}</text>'
+        f'</g><g id="history-current-marker">'
+        f'<line x1="{points[-1][0]:.2f}" y1="{points[-1][1]:.2f}" x2="{points[-1][0]:.2f}" y2="{baseline}" stroke="{theme.signal_soft}" stroke-dasharray="2 4"/>'
+        f'<text class="mono muted" x="{points[-1][0]:.2f}" y="{baseline + 42}" font-size="8" text-anchor="end">CURRENT</text></g>'
+    )
+    svg.append(
+        f'<g id="history-data" {timeline_attributes}{data_clip}>{"".join(data)}</g>'
+    )
+    if not static:
+        svg.append(
+            f'''<line id="history-scan-front" class="motion" x1="{left:.2f}" y1="{chart_top}" x2="{left:.2f}" y2="{baseline + 3}" stroke="{theme.signal}" stroke-width="1.2" opacity="0.72" filter="url(#history-scan-glow)">
+              <animate attributeName="x1" values="{left:.2f};{right:.2f};{right:.2f};{left:.2f};{left:.2f}" keyTimes="0;0.35;0.85;0.97;1" dur="10s" repeatCount="indefinite" calcMode="linear"/>
+              <animate attributeName="x2" values="{left:.2f};{right:.2f};{right:.2f};{left:.2f};{left:.2f}" keyTimes="0;0.35;0.85;0.97;1" dur="10s" repeatCount="indefinite" calcMode="linear"/>
+              <animate attributeName="opacity" values="0.72;0;0.72;0;0" keyTimes="0;0.35;0.85;0.97;1" dur="10s" repeatCount="indefinite" calcMode="discrete"/>
+            </line>'''
         )
     svg.append(_svg_close())
     return "".join(svg)
