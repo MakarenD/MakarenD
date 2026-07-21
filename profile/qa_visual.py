@@ -13,6 +13,7 @@ from pathlib import Path
 
 from playwright.sync_api import Browser, Page, sync_playwright
 
+from .render import THEMES, render_system_node, render_systems_header
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -33,19 +34,18 @@ def _readme_html(base_url: str, theme: str) -> str:
     background = "#0d1117" if theme == "dark" else "#ffffff"
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     pictures = re.findall(r"<picture>.*?</picture>", readme, flags=re.DOTALL)
-    if len(pictures) != 4:
-        raise RuntimeError("README must contain exactly four picture blocks")
+    if len(pictures) < 5 or "CONNECTED_SYSTEMS:START" not in readme:
+        raise RuntimeError(
+            "README must contain signal pictures and a connected-systems block"
+        )
     raw_base = "https://raw.githubusercontent.com/MakarenD/MakarenD/output/"
-    local_pictures = [
-        picture.replace(raw_base, f"{base_url}/dist/").replace("?v=1", "")
-        for picture in pictures
-    ]
+    local_readme = re.sub(r"\?v=\d+", "", readme.replace(raw_base, f"{base_url}/dist/"))
     return f"""<!doctype html><html><head><meta charset="utf-8"><style>
-      html,body{{margin:0;background:{background}}}
+      html,body{{margin:0;background:{background};color:{"#f0f6fc" if theme == "dark" else "#1f2328"}}}
       main{{width:100%;max-width:1000px;margin:0 auto;padding:12px;box-sizing:border-box}}
-      picture{{display:block;margin:0 0 18px}}
+      picture{{display:block}}
       img{{display:block;width:100%;height:auto}}
-    </style></head><body><main>{"".join(local_pictures)}</main></body></html>"""
+    </style></head><body><main>{local_readme}</main></body></html>"""
 
 
 def _asset_html(
@@ -57,6 +57,67 @@ def _asset_html(
     return f"""<!doctype html><html><head><meta charset="utf-8"><style>
       html,body{{margin:0;background:{background}}} img{{display:block;width:100%;height:auto}}
     </style></head><body><img id="asset" src="{base_url}/dist/signal-{section}-{theme}{mobile}{reduced_suffix}.svg"></body></html>"""
+
+
+def _systems_fixture_html(base_url: str, theme: str, width: int) -> str:
+    mobile = "-mobile" if width <= 480 else ""
+    background = "#0d1117" if theme == "dark" else "#ffffff"
+    assets = [
+        "signal-systems-header",
+        "signal-system-qa-community",
+        "signal-system-qa-product",
+        "signal-system-qa-website",
+    ]
+    images = "".join(
+        f'<img src="{base_url}/qa-artifacts/makaren-signal/systems-fixture/{asset}-{theme}{mobile}.svg" alt="{asset}" />'
+        for asset in assets
+    )
+    return f"""<!doctype html><html><head><meta charset="utf-8"><style>
+      html,body{{margin:0;background:{background}}} img{{display:block;width:100%;height:auto}}
+    </style></head><body>{images}</body></html>"""
+
+
+def _write_systems_fixture(output_dir: Path) -> None:
+    fixture_dir = output_dir / "systems-fixture"
+    fixture_dir.mkdir(parents=True, exist_ok=True)
+    systems = [
+        {
+            "id": "qa-community",
+            "kind": "community",
+            "name": "Example Community",
+            "url": "https://example.com/community",
+            "description": "Temporary QA fixture",
+        },
+        {
+            "id": "qa-product",
+            "kind": "product",
+            "name": "Example Product",
+            "url": "https://example.com/product",
+            "description": "Temporary QA fixture",
+            "status": "live",
+        },
+        {
+            "id": "qa-website",
+            "kind": "website",
+            "name": "Example Website",
+            "url": "https://example.com",
+            "description": "Temporary QA fixture",
+        },
+    ]
+    for theme_name, theme in THEMES.items():
+        for mobile in (False, True):
+            suffix = "-mobile" if mobile else ""
+            (
+                fixture_dir / f"signal-systems-header-{theme_name}{suffix}.svg"
+            ).write_text(render_systems_header(theme, mobile), encoding="utf-8")
+            for index, system in enumerate(systems):
+                (
+                    fixture_dir
+                    / f"signal-system-{system['id']}-{theme_name}{suffix}.svg"
+                ).write_text(
+                    render_system_node(system, theme, index, len(systems), mobile),
+                    encoding="utf-8",
+                )
 
 
 def _capture(page: Page, html: str, path: Path, wait_ms: int) -> None:
@@ -78,6 +139,7 @@ def _new_page(browser: Browser, width: int, theme: str, reduced: bool) -> Page:
 
 def run(output_dir: Path) -> dict[str, object]:
     output_dir.mkdir(parents=True, exist_ok=True)
+    _write_systems_fixture(output_dir)
     server, base_url = _serve()
     captures: list[str] = []
     try:
@@ -98,8 +160,13 @@ def run(output_dir: Path) -> dict[str, object]:
                         selected = page.locator("img").evaluate_all(
                             "images => images.map(image => image.currentSrc)"
                         )
+                        motion_assets = [
+                            url for url in selected if "signal-system" not in url
+                        ]
                         expected_mobile = width <= 480
-                        if any(("-reduced.svg" in url) != reduced for url in selected):
+                        if any(
+                            ("-reduced.svg" in url) != reduced for url in motion_assets
+                        ):
                             raise RuntimeError(
                                 "picture selected an incorrect motion asset"
                             )
@@ -116,6 +183,33 @@ def run(output_dir: Path) -> dict[str, object]:
                         captures.append(path.name)
                         page.context.close()
 
+            page = _new_page(browser, 1000, "dark", False)
+            page.set_content(_readme_html(base_url, "dark"), wait_until="networkidle")
+            hrefs = page.locator("a").evaluate_all(
+                "links => links.map(link => link.href)"
+            )
+            expected = ["https://github.com/UNIVER-Project", "https://makaren.pro/"]
+            if hrefs != expected:
+                raise RuntimeError(f"Unexpected README links: {hrefs}")
+            clicked = page.locator("a").evaluate_all(
+                "links => links.map(link => { let href = ''; link.addEventListener('click', event => { event.preventDefault(); href = link.href; }, { once: true }); link.click(); return href; })"
+            )
+            if clicked != expected:
+                raise RuntimeError(
+                    f"README links did not receive expected clicks: {clicked}"
+                )
+            page.context.close()
+
+            for theme in ("dark", "light"):
+                for width in (1000, 360):
+                    page = _new_page(browser, width, theme, False)
+                    path = output_dir / f"{theme}-{width}-systems-fixture.png"
+                    _capture(
+                        page, _systems_fixture_html(base_url, theme, width), path, 100
+                    )
+                    captures.append(path.name)
+                    page.context.close()
+
             timeline = {
                 "hero": (
                     ("initial", 30),
@@ -125,9 +219,13 @@ def run(output_dir: Path) -> dict[str, object]:
                 ),
                 "history": (
                     ("initial", 30),
-                    ("assembly", 800),
-                    ("final", 1850),
-                    ("pulse", 7550),
+                    ("draw-25", 650),
+                    ("draw-50", 1250),
+                    ("final", 2500),
+                    ("pulse-start", 3550),
+                    ("pulse-middle", 4700),
+                    ("pulse-end", 5850),
+                    ("pulse-repeat", 7050),
                 ),
             }
             for theme in ("dark", "light"):
@@ -171,6 +269,7 @@ def run(output_dir: Path) -> dict[str, object]:
         "files": captures,
         "reduced_motion_stable": True,
         "picture_selection_verified": True,
+        "clicks_verified": True,
     }
     (output_dir / "summary.json").write_text(
         json.dumps(summary, indent=2) + "\n", encoding="utf-8"

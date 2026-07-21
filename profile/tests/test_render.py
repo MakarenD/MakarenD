@@ -8,9 +8,16 @@ import xml.etree.ElementTree as ET
 from datetime import date, timedelta
 from pathlib import Path
 
-from profile.generate import DEFAULT_CONFIG, generate, load_config
+from profile.generate import (
+    DEFAULT_CONFIG,
+    README,
+    connected_systems_block,
+    generate,
+    load_config,
+    sync_readme,
+)
 from profile.github_data import ContributionDay
-from profile.render import THEMES, render_systems
+from profile.render import THEMES, render_system_node, system_asset_stem
 
 
 SVG_NS = "{http://www.w3.org/2000/svg}"
@@ -53,7 +60,7 @@ class RenderTests(unittest.TestCase):
     def test_all_dark_light_desktop_and_mobile_assets_exist(self) -> None:
         self.assertEqual(32, len(self.paths))
         self.assertEqual(32, self.summary["assets"])
-        for section in ("hero", "capabilities", "history", "systems"):
+        for section in ("hero", "capabilities", "history"):
             for theme in ("dark", "light"):
                 for suffix in ("", "-mobile", "-reduced", "-mobile-reduced"):
                     self.assertTrue(
@@ -61,6 +68,19 @@ class RenderTests(unittest.TestCase):
                             self.output / f"signal-{section}-{theme}{suffix}.svg"
                         ).is_file()
                     )
+        for theme in ("dark", "light"):
+            for suffix in ("", "-mobile"):
+                self.assertTrue(
+                    (
+                        self.output / f"signal-systems-header-{theme}{suffix}.svg"
+                    ).is_file()
+                )
+                self.assertTrue(
+                    (
+                        self.output
+                        / f"signal-system-univer-project-{theme}{suffix}.svg"
+                    ).is_file()
+                )
 
     def test_svgs_are_accessible_safe_and_numerically_valid(self) -> None:
         numeric_nonnegative = {"width", "height", "r", "rx", "ry", "stroke-width"}
@@ -91,7 +111,9 @@ class RenderTests(unittest.TestCase):
                     any(name.lower().startswith("on") for name in element.attrib)
                 )
                 for name in numeric_nonnegative:
-                    if name in element.attrib and element.attrib[name] != "100%":
+                    if name in element.attrib and not element.attrib[name].endswith(
+                        "%"
+                    ):
                         self.assertGreaterEqual(
                             float(element.attrib[name]), 0, (path, name)
                         )
@@ -139,34 +161,51 @@ class RenderTests(unittest.TestCase):
         )
         self.assertIn("history-pulse-motion", history)
         self.assertIn('data-week-count="52"', history)
-        self.assertIn("--draw-duration:1.7s", history)
+        self.assertIn('data-initial-draw="2.4s"', history)
+        self.assertIn('data-pulse-duration="2.4s"', history)
+        self.assertIn('data-pulse-gap="1.1s"', history)
+        self.assertIn('data-cycle="3.5s"', history)
+        self.assertIn("history-pulse-halo-motion", history)
+        self.assertIn("history-pulse-trail", history)
+        self.assertIn("history-pulse-points-mask", history)
+        self.assertNotIn(
+            "history-pulse-motion",
+            (self.output / "signal-history-dark-reduced.svg").read_text(
+                encoding="utf-8"
+            ),
+        )
         self.assertIn("--draw-duration:.65s", capabilities)
         cycles = [
             float(value)
             for value in re.findall(r'data-cycle="([0-9.]+)s"', hero + history)
         ]
         self.assertTrue(cycles)
-        self.assertTrue(all(4.5 <= value <= 6.0 for value in cycles))
+        self.assertIn(3.5, cycles)
 
-    def test_connected_systems_use_only_config_order(self) -> None:
+    def test_connected_system_assets_use_config_order_and_safe_filename(self) -> None:
         config = load_config(DEFAULT_CONFIG)
         config["connected_systems"] = [
             {
+                "id": "first",
+                "kind": "project",
                 "name": "First",
                 "url": "https://github.com/first",
                 "description": "Project",
             },
             {
+                "id": "second",
+                "kind": "organization",
                 "name": "Second",
                 "url": "https://github.com/second",
                 "description": "Organization",
             },
         ]
-        svg = render_systems(config, THEMES["dark"])
-        self.assertEqual(2, svg.count('class="system-node"'))
-        self.assertLess(svg.index("FIRST"), svg.index("SECOND"))
+        svg = render_system_node(config["connected_systems"][0], THEMES["dark"], 0, 2)
+        self.assertEqual("signal-system-first", system_asset_stem("first"))
+        self.assertEqual(1, svg.count('class="system-node"'))
+        self.assertIn("PROJECT", svg)
         self.assertIn("GITHUB.COM/FIRST", svg)
-        self.assertNotIn("UNIVER-PROJECT", svg)
+        self.assertNotIn("SECOND", svg)
 
     def test_same_input_is_byte_deterministic(self) -> None:
         second = Path(self.temporary.name) / "second"
@@ -179,24 +218,15 @@ class RenderTests(unittest.TestCase):
         for path in self.paths:
             self.assertEqual(path.read_bytes(), (second / path.name).read_bytes())
 
-    def test_readme_uses_four_picture_blocks_and_no_legacy_widgets(self) -> None:
-        readme = (DEFAULT_CONFIG.parents[1] / "README.md").read_text(encoding="utf-8")
-        self.assertEqual(4, readme.count("<picture>"))
-        pictures = re.findall(r"<picture>.*?</picture>", readme, flags=re.DOTALL)
-        self.assertTrue(all(picture.count("<source ") == 8 for picture in pictures))
-        source_names = re.findall(
-            r'srcset="https://raw\.githubusercontent\.com/MakarenD/MakarenD/output/(signal-[^"?]+\.svg)\?v=1"',
-            readme,
-        )
-        self.assertEqual(32, len(source_names))
-        self.assertEqual(
-            {path.name for path in self.paths},
-            set(source_names),
-        )
-        self.assertIn("output/signal-hero-dark.svg?v=1", readme)
-        self.assertIn("output/signal-hero-dark-reduced.svg?v=1", readme)
+    def test_readme_systems_are_synced_as_real_links(self) -> None:
+        readme = README.read_text(encoding="utf-8")
+        systems = connected_systems_block(load_config(DEFAULT_CONFIG))
+        self.assertIn(systems, readme)
+        self.assertIn('<a href="https://github.com/UNIVER-Project"', readme)
+        self.assertIn("signal-system-univer-project-dark.svg?v=2", readme)
+        self.assertIn('aria-label="Open UNIVER-Project"', readme)
+        self.assertIn('<a href="https://makaren.pro">MAKAREN.PRO ↗</a>', readme)
         self.assertIn("prefers-reduced-motion: reduce", readme)
-        self.assertIn("MAKAREN.PRO · SOFTWARE ENGINEERING · EUROPE", readme)
         for forbidden in (
             "typing-svg",
             "snake",
@@ -207,6 +237,12 @@ class RenderTests(unittest.TestCase):
             "streak",
         ):
             self.assertNotIn(forbidden, readme.lower())
+
+    def test_readme_sync_is_idempotent_and_updates_only_marker_blocks(self) -> None:
+        before = README.read_text(encoding="utf-8")
+        self.assertTrue(sync_readme())
+        self.assertEqual(before, README.read_text(encoding="utf-8"))
+        self.assertTrue(sync_readme(check=True))
 
 
 if __name__ == "__main__":

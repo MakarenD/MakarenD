@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 360 242" role="img" aria-labelledby="signal-title signal-description">
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 1000 86" role="img" aria-labelledby="signal-title signal-description">
   <title id="signal-title">Makaren connected systems</title>
-  <desc id="signal-description">Manually configured projects and organizations connected to the signal.</desc>
+  <desc id="signal-description">Connected systems share a continuous signal backbone.</desc>
   <style>
       :root { color-scheme: dark; }
       .sans { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
@@ -23,5 +23,5 @@
       }
 
     </style>
-  <rect width="360" height="242" fill="#080B10" rx="12"/>
-<text class="sans copy" x="24" y="48" font-size="23" font-weight="650" letter-spacing="1">CONNECTED SYSTEMS</text><line x1="42" y1="102" x2="42" y2="102" stroke="#1B7D86"/><g class="system-node" data-system-index="0" data-system-url="https://github.com/UNIVER-Project"><circle cx="42" cy="102" r="5.5" fill="#080B10" stroke="#32D6E2" stroke-width="1.5"/><line x1="48" y1="102" x2="63" y2="102" stroke="#26303B"/><text class="mono copy" x="72" y="98" font-size="14" font-weight="600" letter-spacing="1">UNIVER-PROJECT</text><text class="mono muted" x="72" y="120" font-size="9" letter-spacing="1.2">GITHUB ORGANIZATION</text><text class="mono signal" x="72" y="138" font-size="8">GITHUB.COM/UNIVER-PROJECT</text></g><text class="mono muted" x="336" y="214" font-size="8" text-anchor="end">MANUAL CONFIG / 01 NODE</text></svg>
+  <rect width="1000" height="86" fill="#080B10" rx="12"/>
+<text class="sans copy" x="48" y="51" font-size="25" font-weight="650" letter-spacing="1">CONNECTED SYSTEMS</text><line x1="86" y1="85" x2="86" y2="86" stroke="#1B7D86"/></svg>

@@ -49,6 +49,9 @@ jobs:
       - name: Run unit tests
         run: python -m unittest discover -s profile/tests -p "test_*.py" -v
 
+      - name: Verify README synchronization
+        run: python -m profile.generate --check-readme
+
       - name: Generate signal assets
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -62,7 +65,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          sections=(hero capabilities history systems)
+          sections=(hero capabilities history)
           themes=(dark light)
           for section in "${sections[@]}"; do
             for theme in "${themes[@]}"; do
@@ -72,6 +75,13 @@ jobs:
               test -s "dist/signal-${section}-${theme}-mobile-reduced.svg"
             done
           done
+          test -s "dist/signal-systems-header-dark.svg"
+          test -s "dist/signal-systems-header-light.svg"
+          while IFS= read -r id; do
+            for theme in dark light; do
+              test -s "dist/signal-system-${id}-${theme}.svg"
+            done
+          done < <(python -c 'import json; print(*[item["id"] for item in json.load(open("profile/config.json"))["connected_systems"]], sep="\\n")')
 
       - name: Upload signal assets
         uses: actions/upload-artifact@v7

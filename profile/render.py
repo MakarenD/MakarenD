@@ -428,14 +428,14 @@ def render_history(
     )
     area = f"{path} L {points[-1][0]:.2f} {baseline} L {points[0][0]:.2f} {baseline} Z"
     svg.append(
-        f'<path class="reveal" style="{_reveal_style(0.055, 0.45, 1.2)}" d="{area}" fill="{theme.signal}" opacity="0.055"/>'
+        f'<path class="reveal" style="{_reveal_style(0.055, 0.35, 2.05)}" d="{area}" fill="{theme.signal}" opacity="0.055"/>'
     )
     svg.append(
-        f'<path class="draw" style="--draw-duration:1.7s" id="history-wave" data-week-count="52" data-cycle="5.4s" d="{path}" fill="none" stroke="{theme.signal}" stroke-width="2" '
+        f'<path class="draw" style="--draw-duration:2.4s" id="history-wave" data-week-count="52" data-initial-draw="2.4s" data-pulse-duration="2.4s" data-pulse-gap="1.1s" data-cycle="3.5s" d="{path}" fill="none" stroke="{theme.signal}" stroke-width="2" '
         f'stroke-linecap="round" stroke-linejoin="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="0"/>'
     )
     for index, ((x, y), week) in enumerate(zip(points, weeks)):
-        point_style = _reveal_style(0.5, 0.62 + index * 0.018, 0.26)
+        point_style = _reveal_style(0.5, 0.42 + index * 0.036, 0.24)
         svg.append(
             f'<circle class="weekly-point reveal" style="{point_style}" data-week="{index}" '
             f'data-total="{week.total_contributions}" data-active-days="{week.active_days}" '
@@ -458,67 +458,93 @@ def render_history(
             )
 
     svg.append(
-        f'<g class="reveal" style="{_reveal_style(1, 1.42, 0.32)}">'
+        f'<g class="reveal" style="{_reveal_style(1, 2.48, 0.32)}">'
         f'<circle cx="{peak[0]:.2f}" cy="{peak[1]:.2f}" r="4" fill="{theme.background}" stroke="{theme.signal}" stroke-width="1.4"/>'
         f'<text class="mono signal" x="{peak[0]:.2f}" y="{max(76, peak[1] - 13):.2f}" font-size="8" text-anchor="middle">PEAK {weeks[peak_index].total_contributions}</text>'
         f'<line x1="{points[-1][0]:.2f}" y1="{points[-1][1]:.2f}" x2="{points[-1][0]:.2f}" y2="{baseline}" stroke="{theme.signal_soft}" stroke-dasharray="2 4"/>'
         f'<text class="mono muted" x="{points[-1][0]:.2f}" y="{baseline + 42}" font-size="8" text-anchor="end">CURRENT</text></g>'
     )
-    svg.append(
-        f'<circle class="motion" r="4.4" fill="{theme.signal}" opacity="0"><animateMotion id="history-pulse-motion" '
-        f'path="{path}" begin="2.05s;history-pulse-motion.end+4.4s" dur="1s" fill="freeze"/>'
-        f'<animate id="history-pulse-opacity" attributeName="opacity" values="0;0.75;0" keyTimes="0;0.15;1" '
-        f'begin="2.05s;history-pulse-opacity.end+4.4s" dur="1s" fill="freeze"/></circle>'
-    )
+    if not static:
+        svg.append(
+            f'''<defs><filter id="history-pulse-glow" x="-30%" y="-60%" width="160%" height="220%"><feGaussianBlur stdDeviation="2.2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter><mask id="history-pulse-points-mask"><rect width="{width}" height="{height}" fill="black"/><circle r="24" fill="white"><animateMotion id="history-points-mask-motion" path="{path}" begin="3.5s;history-points-mask-motion.end+1.1s" dur="2.4s" fill="freeze"/></circle></mask></defs>
+            <g class="motion" mask="url(#history-pulse-points-mask)" opacity=".82">{"".join(f'<circle cx="{x:.2f}" cy="{y:.2f}" r="3.4" fill="{theme.signal}"/>' for x, y in points)}</g>
+            <path class="motion" d="{path}" fill="none" stroke="{theme.signal}" stroke-width="3.4" stroke-linecap="round" pathLength="1" stroke-dasharray=".10 .90" opacity="0" filter="url(#history-pulse-glow)"><animate id="history-pulse-trail" attributeName="stroke-dashoffset" from="0" to="-1" begin="3.5s;history-pulse-trail.end+1.1s" dur="2.4s" fill="freeze"/><animate attributeName="opacity" values="0;.58;.58;0" keyTimes="0;.06;.92;1" begin="3.5s;history-pulse-trail-opacity.end+1.1s" dur="2.4s" fill="freeze" id="history-pulse-trail-opacity"/></path>
+            <circle class="motion" r="11" fill="{theme.signal}" opacity="0" filter="url(#history-pulse-glow)"><animateMotion id="history-pulse-halo-motion" path="{path}" begin="3.5s;history-pulse-halo-motion.end+1.1s" dur="2.4s" fill="freeze"/><animate id="history-pulse-halo-opacity" attributeName="opacity" values="0;.17;.17;0" keyTimes="0;.06;.92;1" begin="3.5s;history-pulse-halo-opacity.end+1.1s" dur="2.4s" fill="freeze"/></circle>
+            <circle class="motion" r="5.2" fill="{theme.signal}" opacity="0"><animateMotion id="history-pulse-motion" path="{path}" begin="3.5s;history-pulse-motion.end+1.1s" dur="2.4s" fill="freeze"/><animate id="history-pulse-opacity" attributeName="opacity" values="0;.88;.88;0" keyTimes="0;.06;.92;1" begin="3.5s;history-pulse-opacity.end+1.1s" dur="2.4s" fill="freeze"/></circle>'''
+        )
     svg.append(_svg_close())
     return "".join(svg)
 
 
-def render_systems(
-    config: Mapping[str, object],
-    theme: Theme,
-    mobile: bool = False,
-    static: bool = False,
-) -> str:
-    systems = list(config["connected_systems"])
-    width = 360 if mobile else 1000
-    height = (150 + len(systems) * 92) if mobile else max(190, 112 + len(systems) * 62)
+def system_asset_stem(system_id: str) -> str:
+    return f"signal-system-{system_id}"
+
+
+def render_systems_header(theme: Theme, mobile: bool = False) -> str:
+    width, height = (360, 84) if mobile else (1000, 86)
+    origin_x = 42 if mobile else 86
     svg = [
         _svg_open(
             width,
             height,
             "Makaren connected systems",
-            "Manually configured projects and organizations connected to the signal.",
+            "Connected systems share a continuous signal backbone.",
             theme,
-            static,
         )
     ]
     svg.append(
         f'<text class="sans copy" x="{24 if mobile else 48}" y="{48 if mobile else 51}" font-size="{23 if mobile else 25}" font-weight="650" letter-spacing="1">CONNECTED SYSTEMS</text>'
     )
-    origin_x = 42 if mobile else 86
-    start_y = 102 if mobile else 102
-    end_y = start_y + max(0, len(systems) - 1) * (82 if mobile else 56)
     svg.append(
-        f'<line x1="{origin_x}" y1="{start_y}" x2="{origin_x}" y2="{end_y}" stroke="{theme.signal_soft}"/>'
+        f'<line x1="{origin_x}" y1="{height - 1}" x2="{origin_x}" y2="{height}" stroke="{theme.signal_soft}"/>'
     )
-    for index, system in enumerate(systems):
-        y = start_y + index * (82 if mobile else 56)
-        text_x = 72 if mobile else 116
-        url = escape(str(system["url"]), quote=True)
-        name = escape(str(system["name"]).upper())
-        description = escape(str(system["description"]).upper())
-        display_url = escape(str(system["url"]).removeprefix("https://").upper())
+    svg.append(_svg_close())
+    return "".join(svg)
+
+
+def render_system_node(
+    system: Mapping[str, object],
+    theme: Theme,
+    index: int,
+    total: int,
+    mobile: bool = False,
+) -> str:
+    width, height = (360, 102) if mobile else (1000, 88)
+    origin_x = 42 if mobile else 86
+    text_x = 72 if mobile else 116
+    node_y = 32 if mobile else 28
+    is_last = index == total - 1
+    name = escape(str(system["name"]).upper())
+    kind = escape(str(system["kind"]).upper())
+    description = escape(str(system["description"]).upper())
+    status = escape(str(system.get("status", "")).upper())
+    display_url = escape(str(system["url"]).removeprefix("https://").upper())
+    svg = [
+        _svg_open(
+            width,
+            height,
+            str(system["name"]),
+            f"{system['kind']}: {system['description']}.",
+            theme,
+        )
+    ]
+    svg.append(
+        f'<line x1="{origin_x}" y1="0" x2="{origin_x}" y2="{node_y}" stroke="{theme.signal_soft}"/>'
+    )
+    if not is_last:
         svg.append(
-            f'<g class="system-node" data-system-index="{index}" data-system-url="{url}">'
-            f'<circle cx="{origin_x}" cy="{y}" r="5.5" fill="{theme.background}" stroke="{theme.signal}" stroke-width="1.5"/>'
-            f'<line x1="{origin_x + 6}" y1="{y}" x2="{text_x - 9}" y2="{y}" stroke="{theme.line}"/>'
-            f'<text class="mono copy" x="{text_x}" y="{y - 4}" font-size="{14 if mobile else 15}" font-weight="600" letter-spacing="1">{name}</text>'
-            f'<text class="mono muted" x="{text_x}" y="{y + 18}" font-size="9" letter-spacing="1.2">{description}</text>'
-            f'<text class="mono signal" x="{text_x}" y="{y + 36}" font-size="8">{display_url}</text></g>'
+            f'<line x1="{origin_x}" y1="{node_y}" x2="{origin_x}" y2="{height}" stroke="{theme.signal_soft}"/>'
         )
     svg.append(
-        f'<text class="mono muted" x="{width - (24 if mobile else 48)}" y="{height - 28}" font-size="8" text-anchor="end">MANUAL CONFIG / {len(systems):02d} NODE</text>'
+        f'<g class="system-node" data-system-index="{index}" data-system-id="{escape(str(system["id"]), quote=True)}">'
+        f'<circle cx="{origin_x}" cy="{node_y}" r="5.5" fill="{theme.background}" stroke="{theme.signal}" stroke-width="1.5"/>'
+        f'<line x1="{origin_x + 6}" y1="{node_y}" x2="{text_x - 9}" y2="{node_y}" stroke="{theme.line}"/>'
+        f'<text class="mono copy" x="{text_x}" y="{node_y - 4}" font-size="{13 if mobile else 15}" font-weight="600" letter-spacing="1">{name}</text>'
+        f'<text class="mono signal" x="{text_x}" y="{node_y + 16}" font-size="8" letter-spacing="1.2">{kind}</text>'
+        f'<text class="mono muted" x="{text_x}" y="{node_y + 31}" font-size="8">{description}</text>'
+        f'<text class="mono signal" x="{text_x}" y="{node_y + 47}" font-size="8">{display_url}</text>'
+        f"{f'<text class="mono signal" x="{width - (24 if mobile else 48)}" y="{node_y - 4}" font-size="8" text-anchor="end" letter-spacing="1">{status}</text>' if status else ''}"
+        "</g>"
     )
     svg.append(_svg_close())
     return "".join(svg)
@@ -545,9 +571,6 @@ def render_all(
             "history": lambda mobile, static: render_history(
                 weeks, metrics, theme, mobile, static
             ),
-            "systems": lambda mobile, static: render_systems(
-                config, theme, mobile, static
-            ),
         }
         for name, renderer in renderers.items():
             for mobile in (False, True):
@@ -561,4 +584,28 @@ def render_all(
                     )
                     path.write_text(normalized, encoding="utf-8")
                     written.append(path)
+        for mobile in (False, True):
+            suffix = "-mobile" if mobile else ""
+            header = output_dir / f"signal-systems-header-{theme_name}{suffix}.svg"
+            header_content = render_systems_header(theme, mobile)
+            header.write_text(
+                "\n".join(line.rstrip() for line in header_content.splitlines()) + "\n",
+                encoding="utf-8",
+            )
+            written.append(header)
+            systems = list(config["connected_systems"])
+            for index, system in enumerate(systems):
+                node = (
+                    output_dir
+                    / f"{system_asset_stem(str(system['id']))}-{theme_name}{suffix}.svg"
+                )
+                node_content = render_system_node(
+                    system, theme, index, len(systems), mobile
+                )
+                node.write_text(
+                    "\n".join(line.rstrip() for line in node_content.splitlines())
+                    + "\n",
+                    encoding="utf-8",
+                )
+                written.append(node)
     return written

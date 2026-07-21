@@ -20,10 +20,12 @@ class ConfigTests(unittest.TestCase):
             ["UNIVER-Project"], [item["name"] for item in config["connected_systems"]]
         )
 
-    def test_connected_system_requires_only_manual_fields(self) -> None:
+    def test_connected_system_supports_arbitrary_kind_and_optional_status(self) -> None:
         config = load_config(DEFAULT_CONFIG)
         config["connected_systems"].append(
             {
+                "id": "example-service",
+                "kind": "service",
                 "name": "Example",
                 "url": "https://github.com/example",
                 "description": "GitHub project",
@@ -43,6 +45,20 @@ class ConfigTests(unittest.TestCase):
         config["connected_systems"][0]["url"] = "http://github.com/UNIVER-Project"
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "config.json"
+            path.write_text(json.dumps(config), encoding="utf-8")
+            with self.assertRaises(ContributionDataError):
+                load_config(path)
+
+    def test_duplicate_or_unsafe_system_id_and_site_url_are_rejected(self) -> None:
+        config = load_config(DEFAULT_CONFIG)
+        config["connected_systems"].append(dict(config["connected_systems"][0]))
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "config.json"
+            path.write_text(json.dumps(config), encoding="utf-8")
+            with self.assertRaises(ContributionDataError):
+                load_config(path)
+            config["connected_systems"].pop()
+            config["identity"]["site_url"] = "http://makaren.pro"
             path.write_text(json.dumps(config), encoding="utf-8")
             with self.assertRaises(ContributionDataError):
                 load_config(path)
