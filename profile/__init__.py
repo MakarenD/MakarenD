@@ -1,0 +1,1 @@
+"""Makaren Signal profile generator."""

@@ -1,0 +1,27 @@
+{
+  "identity": {
+    "handle": "makaren",
+    "github_username": "MakarenD",
+    "role": "Software Engineer · Full-stack Developer",
+    "focus": ".NET · Web · Python",
+    "location": "Europe",
+    "site": "makaren.pro",
+    "site_url": "https://makaren.pro"
+  },
+  "capabilities": {
+    "backend": [".NET", "C#", "Python", "Node.js", "PHP", "Lua"],
+    "frontend": ["React", "JavaScript", "Tailwind CSS"],
+    "data": ["PostgreSQL", "MySQL", "InterSystems Caché"],
+    "platform": ["Docker", "Linux", "macOS", "Windows", "Git"]
+  },
+  "connected_systems": [
+    {
+      "id": "univer-project",
+      "kind": "organization",
+      "name": "UNIVER-Project",
+      "url": "https://github.com/UNIVER-Project",
+      "description": "GitHub organization",
+      "status": "connected"
+    }
+  ]
+}

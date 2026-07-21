@@ -1,89 +1,70 @@
+<picture>
+  <source media="(max-width: 480px) and (prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-hero-dark-mobile-reduced.svg?v=1" />
+  <source media="(max-width: 480px) and (prefers-reduced-motion: reduce) and (prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-hero-light-mobile-reduced.svg?v=1" />
+  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-hero-dark-reduced.svg?v=1" />
+  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-hero-light-reduced.svg?v=1" />
+  <source media="(max-width: 480px) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-hero-dark-mobile.svg?v=1" />
+  <source media="(max-width: 480px) and (prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-hero-light-mobile.svg?v=1" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-hero-dark.svg?v=1" />
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-hero-light.svg?v=1" />
+  <img src="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-hero-light.svg?v=1" width="100%" alt="Makaren Signal" />
+</picture>
+
+<br />
+
+<picture>
+  <source media="(max-width: 480px) and (prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-dark-mobile-reduced.svg?v=3" />
+  <source media="(max-width: 480px) and (prefers-reduced-motion: reduce) and (prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-light-mobile-reduced.svg?v=3" />
+  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-dark-reduced.svg?v=3" />
+  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-light-reduced.svg?v=3" />
+  <source media="(max-width: 480px) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-dark-mobile.svg?v=3" />
+  <source media="(max-width: 480px) and (prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-light-mobile.svg?v=3" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-dark.svg?v=3" />
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-light.svg?v=3" />
+  <img src="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-capabilities-light.svg?v=3" width="100%" alt="Makaren capabilities" />
+</picture>
+
+<br />
+
+<picture>
+  <source media="(max-width: 480px) and (prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-dark-mobile-reduced.svg?v=3" />
+  <source media="(max-width: 480px) and (prefers-reduced-motion: reduce) and (prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-light-mobile-reduced.svg?v=3" />
+  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-dark-reduced.svg?v=3" />
+  <source media="(prefers-reduced-motion: reduce) and (prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-light-reduced.svg?v=3" />
+  <source media="(max-width: 480px) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-dark-mobile.svg?v=3" />
+  <source media="(max-width: 480px) and (prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-light-mobile.svg?v=3" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-dark.svg?v=3" />
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-light.svg?v=3" />
+  <img src="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-history-light.svg?v=3" width="100%" alt="Makaren Signal history" />
+</picture>
+
+<br />
+
+<!-- CONNECTED_SYSTEMS:START -->
+<picture>
+  <source media="(max-width: 480px) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-systems-header-dark-mobile.svg?v=2" />
+  <source media="(max-width: 480px) and (prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-systems-header-light-mobile.svg?v=2" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-systems-header-dark.svg?v=2" />
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-systems-header-light.svg?v=2" />
+  <img src="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-systems-header-light.svg?v=2" width="100%" alt="Makaren connected systems" />
+</picture>
+
+<a href="https://github.com/UNIVER-Project" aria-label="Open UNIVER-Project" title="Open UNIVER-Project">
+<picture>
+  <source media="(max-width: 480px) and (prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-system-univer-project-dark-mobile.svg?v=2" />
+  <source media="(max-width: 480px) and (prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-system-univer-project-light-mobile.svg?v=2" />
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-system-univer-project-dark.svg?v=2" />
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-system-univer-project-light.svg?v=2" />
+  <img src="https://raw.githubusercontent.com/MakarenD/MakarenD/output/signal-system-univer-project-light.svg?v=2" width="100%" alt="UNIVER-Project" />
+</picture>
+</a>
+<!-- CONNECTED_SYSTEMS:END -->
+
+<!-- IDENTITY_FOOTER:START -->
 <div align="center">
-  <img
-    src="https://readme-typing-svg.demolab.com?font=Fira+Code&size=35&pause=1000&color=00D2FF&center=true&vCenter=true&width=500&lines=SOFTWARE+ENGINEER;FULLSTACK+DEVELOPER;.NET+CORE+ENTHUSIAST"
-    alt="Typing SVG"
-  />
+  <sub>
+    <a href="https://makaren.pro">MAKAREN.PRO</a>
+    · SOFTWARE ENGINEERING · EUROPE
+  </sub>
 </div>
-
-<br/>
-
-### 🛠️ Мой технологический стек
-
-<div align="center">
-  <a href="https://skillicons.dev">
-    <img
-      src="https://skillicons.dev/icons?i=dotnet,cs,react,tailwind,js,nodejs,php,lua,postgres,mysql,docker,linux,apple,windows,git&theme=dark"
-      alt="Technology Stack"
-    />
-  </a>
-
-<br/><br/>
-
-<img
- src="https://img.shields.io/badge/Caché-0083D0?style=flat-square&logo=intersystems&logoColor=white"
- alt="InterSystems Caché"
-/>
-
-</div>
-
-<br/>
-
-<div align="center">
-  <img
-    src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=20&pause=2000&color=39D353&center=true&vCenter=true&width=600&lines=%3E_%20git%20push%20origin%20main;%D0%97%D0%B0%D0%BB%D0%B8%D0%B2%D0%B0%D1%8E%20commits%20%D1%81%D1%83%D1%87%D0%BA%D0%B0%D0%BC%20%D0%B2%20repositories...;%3E_%20Everything%20up-to-date!"
-    alt="Git Push Animation"
-  />
-</div>
-
----
-
-### 🐍 Активность (GitHub Snake)
-
-<div align="center">
-  <picture>
-    <source
-      media="(prefers-color-scheme: dark)"
-      srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/github-contribution-grid-snake-dark.svg"
-    />
-    <source
-      media="(prefers-color-scheme: light)"
-      srcset="https://raw.githubusercontent.com/MakarenD/MakarenD/output/github-contribution-grid-snake.svg"
-    />
-    <img
-      src="https://raw.githubusercontent.com/MakarenD/MakarenD/output/github-contribution-grid-snake-dark.svg"
-      alt="GitHub Contribution Grid Snake Animation"
-    />
-  </picture>
-</div>
-
----
-
-### 📊 Статистика (Metrics)
-
-<div align="center">
-  <img
-    src="https://raw.githubusercontent.com/MakarenD/MakarenD/output/github-metrics.svg"
-    alt="GitHub Metrics"
-  />
-</div>
-
----
-
-### 🚀 Проекты, в которых я участвую
-
-<div align="center">
-  <a href="https://github.com/UNIVER-Project">
-    <img
-      src="https://avatars.githubusercontent.com/u/231749927?s=200&v=4"
-      width="90"
-      alt="UNIVER-Project Logo"
-    />
-
-
-<br/>
-
-<b>UNIVER-Project</b>
-
-
-  </a>
-</div>
+<!-- IDENTITY_FOOTER:END -->
